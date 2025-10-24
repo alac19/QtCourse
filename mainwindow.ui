@@ -130,10 +130,13 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>0</string>
+         <string/>
         </property>
         <property name="alignment">
          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+        </property>
+        <property name="placeholderText">
+         <string>0</string>
         </property>
        </widget>
       </item>
@@ -170,6 +173,9 @@
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
         </property>
         <property name="text">
          <string>.</string>
