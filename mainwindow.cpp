@@ -56,12 +56,16 @@ void MainWindow::on_actionReplace_triggered()
 void MainWindow::on_actionNew_triggered()
 {
     ui->TextEdit->clear();
+
     this->setWindowTitle(tr("新建文本文件 -- 灵动编辑"));
 }
 
 
 void MainWindow::on_actionOpen_triggered()
 {
+    // 依旧先清理编辑器内容
+    ui->TextEdit->clear();
+
     QString filename = QFileDialog::getOpenFileName(this, "打开文件", ".", tr("Text files(*.txt) ;; All(*.*)"));
 
     QFile file(filename);
@@ -73,6 +77,7 @@ void MainWindow::on_actionOpen_triggered()
 
     filePath = filename;
 
+    // 读出文件
     QTextStream in(&file);
     QString text = in.readAll();
     ui->TextEdit->insertPlainText(text);
@@ -101,6 +106,7 @@ void MainWindow::on_actionSave_triggered()
         filePath = filename;
     }
 
+    // 读入文件
     QTextStream out(&file);
     QString text = ui->TextEdit->toPlainText();
     out << text;
