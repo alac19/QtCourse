@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>灵动编辑</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -31,7 +31,7 @@
      <number>1</number>
     </property>
     <item>
-     <widget class="QPlainTextEdit" name="plainTextEdit"/>
+     <widget class="QPlainTextEdit" name="TextEdit"/>
     </item>
    </layout>
   </widget>
@@ -92,6 +92,7 @@
     <property name="title">
      <string>帮助(&amp;H)</string>
     </property>
+    <addaction name="actionAbout"/>
    </widget>
    <addaction name="menu_F"/>
    <addaction name="menu_E"/>
@@ -139,6 +140,9 @@
    </property>
    <property name="text">
     <string>新建(&amp;N)</string>
+   </property>
+   <property name="toolTip">
+    <string>新建文件</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
@@ -189,7 +193,7 @@
      <normaloff>:/node_modules/remixicon/icons_png/Document/file-edit-line.png</normaloff>:/node_modules/remixicon/icons_png/Document/file-edit-line.png</iconset>
    </property>
    <property name="text">
-    <string>另存为(&amp;V)</string>
+    <string>另存为(&amp;A)</string>
    </property>
    <property name="toolTip">
     <string>将文件重新保存</string>
@@ -207,13 +211,13 @@
      <normaloff>:/node_modules/remixicon/icons_png/System/logout-box-r-line.png</normaloff>:/node_modules/remixicon/icons_png/System/logout-box-r-line.png</iconset>
    </property>
    <property name="text">
-    <string>退出(&amp;X)</string>
+    <string>退出(&amp;E)</string>
    </property>
    <property name="toolTip">
     <string>退出</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+X</string>
+    <string>Ctrl+E</string>
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>
@@ -225,7 +229,7 @@
      <normaloff>:/node_modules/remixicon/icons_png/Arrows/arrow-go-back-line.png</normaloff>:/node_modules/remixicon/icons_png/Arrows/arrow-go-back-line.png</iconset>
    </property>
    <property name="text">
-    <string>撤销(&amp;K)</string>
+    <string>撤销(&amp;R)</string>
    </property>
    <property name="toolTip">
     <string>撤销</string>
@@ -330,7 +334,7 @@
   <action name="actionReplace">
    <property name="icon">
     <iconset resource="editor.qrc">
-     <normaloff>:/node_modules/remixicon/icons_png/Arrows/contract-right-fill.png</normaloff>:/node_modules/remixicon/icons_png/Arrows/contract-right-fill.png</iconset>
+     <normaloff>:/node_modules/remixicon/icons_png/Editor/a-b.png</normaloff>:/node_modules/remixicon/icons_png/Editor/a-b.png</iconset>
    </property>
    <property name="text">
     <string>替换(&amp;P)</string>
@@ -423,13 +427,13 @@
      <normaloff>:/node_modules/remixicon/icons_png/Editor/font-color.png</normaloff>:/node_modules/remixicon/icons_png/Editor/font-color.png</iconset>
    </property>
    <property name="text">
-    <string>字体颜色(R)</string>
+    <string>字体颜色(C)</string>
    </property>
    <property name="toolTip">
     <string>字体颜色</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+R</string>
+    <string>Ctrl+C</string>
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>
@@ -459,7 +463,7 @@
      <normaloff>:/node_modules/remixicon/icons_png/Editor/font-sans-serif.png</normaloff>:/node_modules/remixicon/icons_png/Editor/font-sans-serif.png</iconset>
    </property>
    <property name="text">
-    <string>编辑器背景色(&amp;D)</string>
+    <string>编辑器背景色(&amp;E)</string>
    </property>
    <property name="toolTip">
     <string>编辑器背景色</string>
@@ -499,6 +503,24 @@
    </property>
    <property name="toolTip">
     <string>状态栏</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="editor.qrc">
+     <normaloff>:/node_modules/remixicon/icons_png/System/more-fill.png</normaloff>:/node_modules/remixicon/icons_png/System/more-fill.png</iconset>
+   </property>
+   <property name="text">
+    <string>关于(&amp;A)</string>
+   </property>
+   <property name="toolTip">
+    <string>关于</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
