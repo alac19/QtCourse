@@ -18,10 +18,27 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void on_actionAbout_triggered();
+
+    void on_actionFind_triggered();
+
+    void on_actionReplace_triggered();
+
+    void on_actionNew_triggered();
+
+    void on_actionOpen_triggered();
+
+    void on_actionSave_triggered();
+
+    void on_actionSaveAs_triggered();
+
 private:
     Ui::MainWindow *ui;
 
     QLabel statusCursorLabel;
     QLabel statusLabel;
+
+    QString filePath;
 };
 #endif // MAINWINDOW_H
