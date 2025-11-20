@@ -40,13 +40,16 @@ MainWindow::MainWindow(QWidget *parent)
     if (mode == QTextEdit::NoWrap) {
         ui->TextEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
 
-        ui->actionTextWrap->setChecked(false);
+        ui->actionTextWrap->setChecked(true);
     }
     else {
         ui->TextEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
 
-        ui->actionTextWrap->setChecked(true);
+        ui->actionTextWrap->setChecked(false);
     }
+
+    ui->actionToolBar->setChecked(true);
+    ui->actionStatusBar->setChecked(true);
 }
 
 MainWindow::~MainWindow()
@@ -370,5 +373,34 @@ void MainWindow::on_actionEditorColor_triggered()
     if(color.isValid()) {
         ui->TextEdit->setStyleSheet(QString("QPlainTextEdit {background-color: %1}").arg(color.name()));
     }
+}
+
+
+void MainWindow::on_actionToolBar_triggered()
+{
+    bool visible = ui->toolBar->isVisible();
+    ui->toolBar->setVisible(!visible);
+    ui->actionToolBar->setChecked(!visible);
+}
+
+
+void MainWindow::on_actionStatusBar_triggered()
+{
+    bool visible = ui->statusbar->isVisible();
+    ui->statusbar->setVisible(!visible);
+    ui->actionStatusBar->setChecked(!visible);
+}
+
+
+void MainWindow::on_actionAll_triggered()
+{
+    ui->TextEdit->selectAll();
+}
+
+
+void MainWindow::on_actionExit_triggered()
+{
+    if (userEditConfirmed())
+        exit(0);
 }
 
