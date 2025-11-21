@@ -78,7 +78,7 @@
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
-             <widget class="QRadioButton" name="ebUp">
+             <widget class="QRadioButton" name="rbUp">
               <property name="font">
                <font>
                 <family>宋体</family>
