@@ -1,4 +1,5 @@
 #include "idatabase.h"
+#include <QUuid>
 
 void IDatabase::initDatabase()
 {
@@ -13,6 +14,71 @@ void IDatabase::initDatabase()
     else {
         qDebug() << "open dataBase is ok";
     }
+}
+
+bool IDatabase::initPatientModel()
+{
+    patientTabModel = new QSqlTableModel(this, dataBase);
+    patientTabModel->setTable("patient");
+    patientTabModel->setEditStrategy(
+        QSqlTableModel::OnManualSubmit);   // 数据保存方式
+    patientTabModel->setSort(patientTabModel->fieldIndex("name"), Qt::AscendingOrder);
+
+    // 查询数据
+    if (!(patientTabModel->select())) {
+        return false;
+    }
+
+    thePatientSelection = new QItemSelectionModel(patientTabModel);
+
+    return true;
+}
+
+int IDatabase::addNewPatient()
+{
+    patientTabModel->insertRow(patientTabModel->rowCount(), QModelIndex());
+    QModelIndex curIndex = patientTabModel->index(patientTabModel->rowCount() - 1, 1);
+
+    int curRecNO = curIndex.row();
+    QSqlRecord curRec = patientTabModel->record(curRecNO);
+    curRec.setValue("CREATEDTIMESTAMP", QDateTime::currentDateTime().toString("yyyy-MM--dd"));
+    curRec.setValue("ID", QUuid::createUuid().toString(QUuid::WithoutBraces));
+
+    patientTabModel->setRecord(curRecNO, curRec);
+
+    return curIndex.row();
+}
+
+bool IDatabase::searchPatient(QString filter)
+{
+    patientTabModel->setFilter(filter);
+    return patientTabModel->select();
+}
+
+bool IDatabase::deleteCurrentPatient()
+{
+    if (!thePatientSelection->hasSelection()) {
+        return false;
+    }
+    int delRow = thePatientSelection->currentIndex().row();
+    patientTabModel->removeRow(delRow);
+    patientTabModel->submitAll();
+    patientTabModel->select();
+    // 删除后选中新的行（比如第一行）
+    if (patientTabModel->rowCount() > 0) {
+        thePatientSelection->setCurrentIndex(patientTabModel->index(0, 0), QItemSelectionModel::Select);
+    }
+    return true;
+}
+
+bool IDatabase::submitPatientEdit()
+{
+    return patientTabModel->submitAll();
+}
+
+void IDatabase::revertPatientEdit()
+{
+    patientTabModel->revertAll();
 }
 
 QString IDatabase::userLogin(QString userName, QString passWord)
