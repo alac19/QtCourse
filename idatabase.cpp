@@ -41,7 +41,7 @@ int IDatabase::addNewPatient()
 
     int curRecNO = curIndex.row();
     QSqlRecord curRec = patientTabModel->record(curRecNO);
-    curRec.setValue("CREATEDTIMESTAMP", QDateTime::currentDateTime().toString("yyyy-MM--dd"));
+    curRec.setValue("CREATEDTIMESTAMP", QDateTime::currentDateTime().toString("yyyy-MM-dd"));
     curRec.setValue("ID", QUuid::createUuid().toString(QUuid::WithoutBraces));
 
     patientTabModel->setRecord(curRecNO, curRec);
@@ -79,6 +79,36 @@ bool IDatabase::submitPatientEdit()
 void IDatabase::revertPatientEdit()
 {
     patientTabModel->revertAll();
+}
+
+bool IDatabase::initDoctorModel()
+{
+
+}
+
+int IDatabase::addNewDoctor()
+{
+
+}
+
+bool IDatabase::searchDoctor(QString filter)
+{
+
+}
+
+bool IDatabase::deleteCurrentDoctor()
+{
+
+}
+
+bool IDatabase::submitDoctorEdit()
+{
+
+}
+
+void IDatabase::revertDoctorEdit()
+{
+
 }
 
 QString IDatabase::userLogin(QString userName, QString passWord)
