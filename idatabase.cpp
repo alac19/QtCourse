@@ -10,8 +10,7 @@ void IDatabase::initDatabase()
     if (!dataBase.open()) {
         // 打开数据库
         qDebug() << "failed to open dataBase";
-    }
-    else {
+    } else {
         qDebug() << "open dataBase is ok";
     }
 }
@@ -23,6 +22,19 @@ bool IDatabase::initPatientModel()
     patientTabModel->setEditStrategy(
         QSqlTableModel::OnManualSubmit);   // 数据保存方式
     patientTabModel->setSort(patientTabModel->fieldIndex("name"), Qt::AscendingOrder);
+
+
+    // 设置中文表头
+    patientTabModel->setHeaderData(patientTabModel->fieldIndex("ID"), Qt::Horizontal, "ID");
+    patientTabModel->setHeaderData(patientTabModel->fieldIndex("ID_CARD"), Qt::Horizontal, "身份证号");
+    patientTabModel->setHeaderData(patientTabModel->fieldIndex("NAME"), Qt::Horizontal, "姓名");
+    patientTabModel->setHeaderData(patientTabModel->fieldIndex("SEX"), Qt::Horizontal, "性别");
+    patientTabModel->setHeaderData(patientTabModel->fieldIndex("DOB"), Qt::Horizontal, "出生日期");
+    patientTabModel->setHeaderData(patientTabModel->fieldIndex("HEIGHT"), Qt::Horizontal, "身高");
+    patientTabModel->setHeaderData(patientTabModel->fieldIndex("WEIGHT"), Qt::Horizontal, "体重");
+    patientTabModel->setHeaderData(patientTabModel->fieldIndex("MOBILEPHONE"), Qt::Horizontal, "电话号码");
+    patientTabModel->setHeaderData(patientTabModel->fieldIndex("AGE"), Qt::Horizontal, "年龄");
+    patientTabModel->setHeaderData(patientTabModel->fieldIndex("CREATEDTIMESTAMP"), Qt::Horizontal, "创建日期");
 
     // 查询数据
     if (!(patientTabModel->select())) {
@@ -83,32 +95,71 @@ void IDatabase::revertPatientEdit()
 
 bool IDatabase::initDoctorModel()
 {
+    doctorTabModel = new QSqlTableModel(this, dataBase);
+    doctorTabModel->setTable("doctor");  // 注意表名大小写
+    doctorTabModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    doctorTabModel->setSort(doctorTabModel->fieldIndex("name"), Qt::AscendingOrder);
 
+    // 设置中文表头
+    doctorTabModel->setHeaderData(doctorTabModel->fieldIndex("ID"), Qt::Horizontal, "ID");
+    doctorTabModel->setHeaderData(doctorTabModel->fieldIndex("EMPLOYEENO"), Qt::Horizontal, "工号");
+    doctorTabModel->setHeaderData(doctorTabModel->fieldIndex("NAME"), Qt::Horizontal, "姓名");
+    doctorTabModel->setHeaderData(doctorTabModel->fieldIndex("DEPARTMENT_ID"), Qt::Horizontal, "科室ID");
+
+    if (!(doctorTabModel->select())) {
+        return false;
+    }
+
+    theDoctorSelection = new QItemSelectionModel(doctorTabModel);
+    return true;
 }
 
 int IDatabase::addNewDoctor()
 {
+    doctorTabModel->insertRow(doctorTabModel->rowCount(), QModelIndex());
+    QModelIndex curIndex = doctorTabModel->index(doctorTabModel->rowCount() - 1, 1);
+    int curRecNO = curIndex.row();
+    QSqlRecord curRec = doctorTabModel->record(curRecNO);
+    curRec.setValue("ID", QUuid::createUuid().toString(QUuid::WithoutBraces));
 
+    doctorTabModel->setRecord(curRecNO, curRec);
+
+    // 如果有需要，可以设置默认值
+    return curIndex.row();
 }
 
 bool IDatabase::searchDoctor(QString filter)
 {
-
+    doctorTabModel->setFilter(filter);
+    return doctorTabModel->select();
 }
 
 bool IDatabase::deleteCurrentDoctor()
 {
+    if (!theDoctorSelection->hasSelection()) {
+        return false;
+    }
 
+    int delRow = theDoctorSelection->currentIndex().row();
+    doctorTabModel->removeRow(delRow);
+    doctorTabModel->submitAll();
+    doctorTabModel->select();
+
+    if (doctorTabModel->rowCount() > 0) {
+        theDoctorSelection->setCurrentIndex(doctorTabModel->index(0, 0), QItemSelectionModel::Select);
+    }
+
+    return true;
 }
 
 bool IDatabase::submitDoctorEdit()
 {
-
+    return doctorTabModel->submitAll();
 }
 
 void IDatabase::revertDoctorEdit()
 {
-
+    doctorTabModel->revertAll();
 }
 
 QString IDatabase::userLogin(QString userName, QString passWord)
@@ -124,13 +175,11 @@ QString IDatabase::userLogin(QString userName, QString passWord)
         if (password == passWord) {
             qDebug() << "login ok";
             return "loginOk";
-        }
-        else {
+        } else {
             qDebug() << "wrong password";
             return "wrongPassword";
         }
-    }
-    else {
+    } else {
         qDebug() << "no such user";
         return "wrongUsername";
     }

@@ -52,6 +52,17 @@ void MasterView::goDoctorView()
     doctorView = new DoctorView(this);
 
     pushWidgetToStackView(doctorView);
+
+    connect(doctorView, SIGNAL(goDoctorEditView(int)), this, SLOT(goDoctorEditView(int)));
+}
+
+void MasterView::goDoctorEditView(int rowNo)
+{
+    doctorEditView = new class doctorEditView(this, rowNo);
+
+    pushWidgetToStackView(doctorEditView);
+
+    connect(doctorEditView, SIGNAL(goPreviousView()), this, SLOT(goPreviousView()));
 }
 
 void MasterView::goPatientView()
@@ -117,8 +128,7 @@ void MasterView::on_stackedWidget_currentChanged(int arg1)
 
     if (count > 1) {
         ui->btBack->setEnabled(true);
-    }
-    else {
+    } else {
         ui->btBack->setEnabled(false);
     }
 
@@ -127,8 +137,7 @@ void MasterView::on_stackedWidget_currentChanged(int arg1)
     if (title == "欢迎") {
         ui->btLogout->setEnabled(true);
         ui->btBack->setEnabled(false);
-    }
-    else {
+    } else {
         ui->btLogout->setEnabled(false);
     }
 }
