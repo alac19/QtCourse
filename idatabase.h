@@ -44,11 +44,22 @@ public:
     bool submitDoctorEdit();                    // 提交医生编辑
     void revertDoctorEdit();                    // 撤销医生编辑
 
+    // 增加科室管理模块数据库部分
+    bool initDepartmentModel();                     // 初始化科室模型
+    int  addNewDepartment();                        // 添加新科室
+    bool searchDepartment(QString filter);          // 搜索科室
+    bool deleteCurrentDepartment();                 // 删除当前科室
+    bool submitDepartmentEdit();                    // 提交科室编辑
+    void revertDepartmentEdit();                    // 撤销科室编辑
+
     QSqlTableModel *patientTabModel;            // 数据模型
     QItemSelectionModel *thePatientSelection;   // 选择模型
 
     QSqlTableModel *doctorTabModel;             // 医生数据模型
     QItemSelectionModel *theDoctorSelection;    // 医生选择模型
+
+    QSqlTableModel *departmentTabModel;            // 科室数据模型
+    QItemSelectionModel *theDepartmentSelection;   // 科室选择模型
 };
 
 #endif // IDATABASE_H

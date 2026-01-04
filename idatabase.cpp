@@ -162,6 +162,73 @@ void IDatabase::revertDoctorEdit()
     doctorTabModel->revertAll();
 }
 
+bool IDatabase::initDepartmentModel()
+{
+    departmentTabModel = new QSqlTableModel(this, dataBase);
+    departmentTabModel->setTable("department");  // 注意表名大小写
+    departmentTabModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    departmentTabModel->setSort(departmentTabModel->fieldIndex("name"), Qt::AscendingOrder);
+
+    // 设置中文表头
+    departmentTabModel->setHeaderData(departmentTabModel->fieldIndex("ID"), Qt::Horizontal, "ID");
+    departmentTabModel->setHeaderData(departmentTabModel->fieldIndex("NAME"), Qt::Horizontal, "名称");
+
+    if (!(departmentTabModel->select())) {
+        return false;
+    }
+
+    theDepartmentSelection = new QItemSelectionModel(departmentTabModel);
+    return true;
+}
+
+int IDatabase::addNewDepartment()
+{
+    departmentTabModel->insertRow(departmentTabModel->rowCount(), QModelIndex());
+    QModelIndex curIndex = departmentTabModel->index(departmentTabModel->rowCount() - 1, 1);
+    int curRecNO = curIndex.row();
+    QSqlRecord curRec = departmentTabModel->record(curRecNO);
+    curRec.setValue("ID", QUuid::createUuid().toString(QUuid::WithoutBraces));
+
+    departmentTabModel->setRecord(curRecNO, curRec);
+
+    // 如果有需要，可以设置默认值
+    return curIndex.row();
+}
+
+bool IDatabase::searchDepartment(QString filter)
+{
+    departmentTabModel->setFilter(filter);
+    return departmentTabModel->select();
+}
+
+bool IDatabase::deleteCurrentDepartment()
+{
+    if (!theDepartmentSelection->hasSelection()) {
+        return false;
+    }
+
+    int delRow = theDepartmentSelection->currentIndex().row();
+    departmentTabModel->removeRow(delRow);
+    departmentTabModel->submitAll();
+    departmentTabModel->select();
+
+    if (departmentTabModel->rowCount() > 0) {
+        theDepartmentSelection->setCurrentIndex(departmentTabModel->index(0, 0), QItemSelectionModel::Select);
+    }
+
+    return true;
+}
+
+bool IDatabase::submitDepartmentEdit()
+{
+    return departmentTabModel->submitAll();
+}
+
+void IDatabase::revertDepartmentEdit()
+{
+    departmentTabModel->revertAll();
+}
+
 QString IDatabase::userLogin(QString userName, QString passWord)
 {
     QSqlQuery query;
