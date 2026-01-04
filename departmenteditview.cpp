@@ -14,7 +14,7 @@ DepartmentEditView::DepartmentEditView(QWidget *parent, int index) :
     dataMapper->setModel(IDatabase::getInstance().departmentTabModel);
     dataMapper->setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
 
-    dataMapper->addMapping(ui->dbEditID, tabModel->fieldIndex("ID"));
+    dataMapper->addMapping(ui->dbEditID, tabModel->fieldIndex("DEPARTMENT_ID"));
     dataMapper->addMapping(ui->dbEditName, tabModel->fieldIndex("NAME"));
 
     dataMapper->setCurrentIndex(index);

@@ -14,14 +14,15 @@ PatientEditView::PatientEditView(QWidget *parent, int index)
     dataMapper->setModel(IDatabase::getInstance().patientTabModel);
     dataMapper->setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
 
-    dataMapper->addMapping(ui->dbEditID, tabModel->fieldIndex("ID"));
+    dataMapper->addMapping(ui->dbEditID, tabModel->fieldIndex("PATIENT_ID"));
     dataMapper->addMapping(ui->dbEditName, tabModel->fieldIndex("NAME"));
     dataMapper->addMapping(ui->dbEditIDCard, tabModel->fieldIndex("ID_CARD"));
+    dataMapper->addMapping(ui->dbEditSex, tabModel->fieldIndex("SEX"));
+    dataMapper->addMapping(ui->dbEditAge, tabModel->fieldIndex("AGE"));
+    dataMapper->addMapping(ui->dbEditDOB, tabModel->fieldIndex("DOB"));
     dataMapper->addMapping(ui->dbEditHeight, tabModel->fieldIndex("HEIGHT"));
     dataMapper->addMapping(ui->dbEditWeight, tabModel->fieldIndex("WEIGHT"));
     dataMapper->addMapping(ui->dbEditMobile, tabModel->fieldIndex("MOBILEPHONE"));
-    dataMapper->addMapping(ui->dbEditDOB, tabModel->fieldIndex("DOB"));
-    dataMapper->addMapping(ui->dbEditSex, tabModel->fieldIndex("SEX"));
     dataMapper->addMapping(ui->dbEditCreatedTimeStamp, tabModel->fieldIndex("CREATEDTIMESTAMP"));
 
     dataMapper->setCurrentIndex(index);

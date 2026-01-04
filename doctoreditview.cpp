@@ -14,7 +14,7 @@ doctorEditView::doctorEditView(QWidget *parent, int index) :
     dataMapper->setModel(IDatabase::getInstance().doctorTabModel);
     dataMapper->setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
 
-    dataMapper->addMapping(ui->dbEditID, tabModel->fieldIndex("ID"));
+    dataMapper->addMapping(ui->dbEditID, tabModel->fieldIndex("DOCTOR_ID"));
     dataMapper->addMapping(ui->dbEditName, tabModel->fieldIndex("NAME"));
     dataMapper->addMapping(ui->dbEditEmployeeNo, tabModel->fieldIndex("EMPLOYEENO"));
     dataMapper->addMapping(ui->dbEditDeptID, tabModel->fieldIndex("DEPARTMENT_ID"));
