@@ -1,5 +1,7 @@
 #include "idatabase.h"
 #include <QUuid>
+#include <QSqlRelationalTableModel>
+#include <QSqlRelation>
 
 void IDatabase::initDatabase()
 {
@@ -25,15 +27,15 @@ bool IDatabase::initPatientModel()
 
 
     // 设置中文表头
-    patientTabModel->setHeaderData(patientTabModel->fieldIndex("ID"), Qt::Horizontal, "ID");
-    patientTabModel->setHeaderData(patientTabModel->fieldIndex("ID_CARD"), Qt::Horizontal, "身份证号");
+    patientTabModel->setHeaderData(patientTabModel->fieldIndex("PATIENT_ID"), Qt::Horizontal, "ID");
     patientTabModel->setHeaderData(patientTabModel->fieldIndex("NAME"), Qt::Horizontal, "姓名");
+    patientTabModel->setHeaderData(patientTabModel->fieldIndex("ID_CARD"), Qt::Horizontal, "身份证号");
     patientTabModel->setHeaderData(patientTabModel->fieldIndex("SEX"), Qt::Horizontal, "性别");
+    patientTabModel->setHeaderData(patientTabModel->fieldIndex("AGE"), Qt::Horizontal, "年龄");
     patientTabModel->setHeaderData(patientTabModel->fieldIndex("DOB"), Qt::Horizontal, "出生日期");
     patientTabModel->setHeaderData(patientTabModel->fieldIndex("HEIGHT"), Qt::Horizontal, "身高");
     patientTabModel->setHeaderData(patientTabModel->fieldIndex("WEIGHT"), Qt::Horizontal, "体重");
     patientTabModel->setHeaderData(patientTabModel->fieldIndex("MOBILEPHONE"), Qt::Horizontal, "电话号码");
-    patientTabModel->setHeaderData(patientTabModel->fieldIndex("AGE"), Qt::Horizontal, "年龄");
     patientTabModel->setHeaderData(patientTabModel->fieldIndex("CREATEDTIMESTAMP"), Qt::Horizontal, "创建日期");
 
     // 查询数据
@@ -54,7 +56,7 @@ int IDatabase::addNewPatient()
     int curRecNO = curIndex.row();
     QSqlRecord curRec = patientTabModel->record(curRecNO);
     curRec.setValue("CREATEDTIMESTAMP", QDateTime::currentDateTime().toString("yyyy-MM-dd"));
-    curRec.setValue("ID", QUuid::createUuid().toString(QUuid::WithoutBraces));
+    curRec.setValue("PATIENT_ID", QUuid::createUuid().toString(QUuid::WithoutBraces));
 
     patientTabModel->setRecord(curRecNO, curRec);
 
@@ -96,14 +98,14 @@ void IDatabase::revertPatientEdit()
 bool IDatabase::initDoctorModel()
 {
     doctorTabModel = new QSqlTableModel(this, dataBase);
-    doctorTabModel->setTable("doctor");  // 注意表名大小写
+    doctorTabModel->setTable("doctor");
     doctorTabModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
     doctorTabModel->setSort(doctorTabModel->fieldIndex("name"), Qt::AscendingOrder);
 
     // 设置中文表头
-    doctorTabModel->setHeaderData(doctorTabModel->fieldIndex("ID"), Qt::Horizontal, "ID");
-    doctorTabModel->setHeaderData(doctorTabModel->fieldIndex("EMPLOYEENO"), Qt::Horizontal, "工号");
+    doctorTabModel->setHeaderData(doctorTabModel->fieldIndex("DOCTOR_ID"), Qt::Horizontal, "ID");
     doctorTabModel->setHeaderData(doctorTabModel->fieldIndex("NAME"), Qt::Horizontal, "姓名");
+    doctorTabModel->setHeaderData(doctorTabModel->fieldIndex("EMPLOYEENO"), Qt::Horizontal, "工号");
     doctorTabModel->setHeaderData(doctorTabModel->fieldIndex("DEPARTMENT_ID"), Qt::Horizontal, "科室ID");
 
     if (!(doctorTabModel->select())) {
@@ -120,7 +122,7 @@ int IDatabase::addNewDoctor()
     QModelIndex curIndex = doctorTabModel->index(doctorTabModel->rowCount() - 1, 1);
     int curRecNO = curIndex.row();
     QSqlRecord curRec = doctorTabModel->record(curRecNO);
-    curRec.setValue("ID", QUuid::createUuid().toString(QUuid::WithoutBraces));
+    curRec.setValue("DOCTOR_ID", QUuid::createUuid().toString(QUuid::WithoutBraces));
 
     doctorTabModel->setRecord(curRecNO, curRec);
 
@@ -165,12 +167,12 @@ void IDatabase::revertDoctorEdit()
 bool IDatabase::initDepartmentModel()
 {
     departmentTabModel = new QSqlTableModel(this, dataBase);
-    departmentTabModel->setTable("department");  // 注意表名大小写
+    departmentTabModel->setTable("department");
     departmentTabModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
     departmentTabModel->setSort(departmentTabModel->fieldIndex("name"), Qt::AscendingOrder);
 
     // 设置中文表头
-    departmentTabModel->setHeaderData(departmentTabModel->fieldIndex("ID"), Qt::Horizontal, "ID");
+    departmentTabModel->setHeaderData(departmentTabModel->fieldIndex("DEPARTMENT_ID"), Qt::Horizontal, "ID");
     departmentTabModel->setHeaderData(departmentTabModel->fieldIndex("NAME"), Qt::Horizontal, "名称");
 
     if (!(departmentTabModel->select())) {
@@ -187,7 +189,7 @@ int IDatabase::addNewDepartment()
     QModelIndex curIndex = departmentTabModel->index(departmentTabModel->rowCount() - 1, 1);
     int curRecNO = curIndex.row();
     QSqlRecord curRec = departmentTabModel->record(curRecNO);
-    curRec.setValue("ID", QUuid::createUuid().toString(QUuid::WithoutBraces));
+    curRec.setValue("DEPARTMENT_ID", QUuid::createUuid().toString(QUuid::WithoutBraces));
 
     departmentTabModel->setRecord(curRecNO, curRec);
 
@@ -227,6 +229,97 @@ bool IDatabase::submitDepartmentEdit()
 void IDatabase::revertDepartmentEdit()
 {
     departmentTabModel->revertAll();
+}
+
+bool IDatabase::initVisitModel()
+{
+    // 改为使用关系表模型
+    visitTabModel = new QSqlRelationalTableModel(this, dataBase);
+    visitTabModel->setTable("Visit_Record");
+    visitTabModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    visitTabModel->setSort(visitTabModel->fieldIndex("VISITTIME"), Qt::AscendingOrder);
+
+    // 设置关系：将ID字段关联到其他表的名称字段
+    // 患者ID -> 患者姓名
+    visitTabModel->setRelation(visitTabModel->fieldIndex("PATIENT_ID"),
+                               QSqlRelation("Patient", "PATIENT_ID", "NAME"));
+
+    // 医生ID -> 医生姓名
+    visitTabModel->setRelation(visitTabModel->fieldIndex("DOCTOR_ID"),
+                               QSqlRelation("Doctor", "Doctor_ID", "NAME"));
+
+    // 科室ID -> 科室名称
+    visitTabModel->setRelation(visitTabModel->fieldIndex("DEPARTMENT_ID"),
+                               QSqlRelation("Department", "DEPARTMENT_ID", "NAME"));
+
+    // 设置中文表头
+    visitTabModel->setHeaderData(visitTabModel->fieldIndex("VISIT_ID"), Qt::Horizontal, "记录ID");
+    visitTabModel->setHeaderData(visitTabModel->fieldIndex("PATIENT_ID"), Qt::Horizontal, "患者ID");
+    visitTabModel->setHeaderData(visitTabModel->fieldIndex("DOCTOR_ID"), Qt::Horizontal, "医生ID");
+    visitTabModel->setHeaderData(visitTabModel->fieldIndex("DEPARTMENT_ID"), Qt::Horizontal, "科室ID");
+    visitTabModel->setHeaderData(visitTabModel->fieldIndex("VISITTIME"), Qt::Horizontal, "就诊日期");
+    visitTabModel->setHeaderData(visitTabModel->fieldIndex("SYMPTOMS"), Qt::Horizontal, "症状");
+    visitTabModel->setHeaderData(visitTabModel->fieldIndex("DIAGNOSIS"), Qt::Horizontal, "诊断");
+    visitTabModel->setHeaderData(visitTabModel->fieldIndex("PRESCRIPTION"), Qt::Horizontal, "处方");
+    visitTabModel->setHeaderData(visitTabModel->fieldIndex("CREATEDTIMESTAMP"), Qt::Horizontal, "创建时间");
+
+    if (!visitTabModel->select()) {
+        return false;
+    }
+
+    theVisitSelection = new QItemSelectionModel(visitTabModel);
+    return true;
+}
+
+int IDatabase::addNewVisit()
+{
+    visitTabModel->insertRow(visitTabModel->rowCount(), QModelIndex());
+    QModelIndex curIndex = visitTabModel->index(visitTabModel->rowCount() - 1, 1);
+
+    int curRecNO = curIndex.row();
+    QSqlRecord curRec = visitTabModel->record(curRecNO);
+    curRec.setValue("CREATEDTIMESTAMP", QDateTime::currentDateTime().toString("yyyy-MM-dd"));
+    curRec.setValue("Visit_ID", QUuid::createUuid().toString(QUuid::WithoutBraces));
+
+    visitTabModel->setRecord(curRecNO, curRec);
+
+    return curIndex.row();
+}
+
+bool IDatabase::searchVisit(QString filter)
+{
+    visitTabModel->setFilter(filter);
+    return visitTabModel->select();
+}
+
+bool IDatabase::deleteCurrentVisit()
+{
+    {
+        if (!theVisitSelection->hasSelection()) {
+            return false;
+        }
+
+        int delRow = theVisitSelection->currentIndex().row();
+        visitTabModel->removeRow(delRow);
+        visitTabModel->submitAll();
+        visitTabModel->select();
+
+        if (visitTabModel->rowCount() > 0) {
+            theVisitSelection->setCurrentIndex(visitTabModel->index(0, 0), QItemSelectionModel::Select);
+        }
+
+        return true;
+    }
+}
+
+bool IDatabase::submitVisitEdit()
+{
+    return visitTabModel->submitAll();
+}
+
+void IDatabase::revertVisitEdit()
+{
+    visitTabModel->revertAll();
 }
 
 QString IDatabase::userLogin(QString userName, QString passWord)

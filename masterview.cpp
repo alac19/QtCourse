@@ -38,6 +38,26 @@ void MasterView::goWelcomeView()
     connect(welcomeView, SIGNAL(goDepartmentView()), this, SLOT(goDepartmentView()));
     connect(welcomeView, SIGNAL(goDoctorView()), this, SLOT(goDoctorView()));
     connect(welcomeView, SIGNAL(goPatientView()), this, SLOT(goPatientView()));
+    connect(welcomeView, SIGNAL(goVisitView()), this, SLOT(goVisitView()));
+}
+
+void MasterView::goVisitView()
+{
+    visitView = new VisitView(this);
+
+    pushWidgetToStackView(visitView);
+
+    connect(visitView, SIGNAL(goVisitEditView(int)), this, SLOT(goVisitEditView(int)));
+}
+
+void MasterView::goVisitEditView(int rowNo)
+{
+    visitEditView = new VisitEditView(this, rowNo);
+
+    pushWidgetToStackView(visitEditView);
+
+    connect(visitEditView, SIGNAL(goPreviousView()), this, SLOT(goPreviousView()));
+
 }
 
 void MasterView::goDepartmentView()

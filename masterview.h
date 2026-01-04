@@ -4,6 +4,8 @@
 #include <QWidget>
 #include "loginview.h"
 #include "welcomeview.h"
+#include "visitview.h"
+#include "visiteditview.h"
 #include "departmentview.h"
 #include "departmenteditview.h"
 #include "doctorview.h"
@@ -29,6 +31,8 @@ public:
 public slots:
     void goLoginView();
     void goWelcomeView();
+    void goVisitView();
+    void goVisitEditView(int rowNo);
     void goDepartmentView();
     void goDepartmentEditView(int rowNo);
     void goDoctorView();
@@ -51,6 +55,8 @@ private:
 
     LoginView *loginView;
     WelcomeView *welcomeView;
+    VisitView *visitView;
+    VisitEditView *visitEditView;
     DepartmentView *departmentView;
     DepartmentEditView *departmentEditView;
     DoctorView *doctorView;

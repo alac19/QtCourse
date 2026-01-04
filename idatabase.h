@@ -52,6 +52,14 @@ public:
     bool submitDepartmentEdit();                    // 提交科室编辑
     void revertDepartmentEdit();                    // 撤销科室编辑
 
+    // 增加就诊记录模块数据库部分
+    bool initVisitModel();                     // 初始化就诊记录模型
+    int  addNewVisit();                        // 添加新就诊记录
+    bool searchVisit(QString filter);          // 搜索就诊记录
+    bool deleteCurrentVisit();                 // 删除当前就诊记录
+    bool submitVisitEdit();                    // 提交就诊记录编辑
+    void revertVisitEdit();                    // 撤销就诊记录编辑
+
     QSqlTableModel *patientTabModel;            // 数据模型
     QItemSelectionModel *thePatientSelection;   // 选择模型
 
@@ -60,6 +68,9 @@ public:
 
     QSqlTableModel *departmentTabModel;            // 科室数据模型
     QItemSelectionModel *theDepartmentSelection;   // 科室选择模型
+
+    QSqlRelationalTableModel *visitTabModel;            // 就诊记录数据模型
+    QItemSelectionModel *theVisitSelection;   // 就诊记录选择模型
 };
 
 #endif // IDATABASE_H
