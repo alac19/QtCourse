@@ -30,29 +30,34 @@ VisitView::~VisitView()
 
 void VisitView::on_btSearch_clicked()
 {
-    QString searchText = ui->txtSearch->text().trimmed();
-    if (searchText.isEmpty()) {
-        // 如果搜索框为空，显示所有记录
-        IDatabase::getInstance().searchVisit("");
-        return;
-    }
-
-    // 构建查询条件：按患者姓名、医生姓名或症状搜索
-    QString filter = QString(
-                         "PATIENT_ID IN (SELECT PATIENT_ID FROM Patient WHERE NAME LIKE '%%1%') "
-                         "OR DOCTOR_ID IN (SELECT Doctor_ID FROM Doctor WHERE NAME LIKE '%%1%') "
-                         "OR SYMPTOMS LIKE '%%1%' "
-                         "OR DIAGNOSIS LIKE '%%1%'"
-                     ).arg(searchText);
-
+    QString filter = QString("visit_id like '%%1%'").arg(ui->txtSearch->text());
     IDatabase::getInstance().searchVisit(filter);
 }
 
 
 void VisitView::on_btAdd_clicked()
 {
-    int currow = IDatabase::getInstance().addNewVisit();
-    emit goVisitEditView(currow);
+    qDebug() << "=== 开始添加就诊记录 ===";
+
+    try {
+        int currow = IDatabase::getInstance().addNewVisit();
+        qDebug() << "添加新记录成功，行号:" << currow;
+
+        if (currow >= 0) {
+            emit goVisitEditView(currow);
+            qDebug() << "已发出跳转信号";
+        } else {
+            QMessageBox::warning(this, "错误", "添加新记录失败");
+        }
+    } catch (const std::exception& e) {
+        qDebug() << "异常:" << e.what();
+        QMessageBox::critical(this, "错误", QString("添加记录时发生异常: %1").arg(e.what()));
+    } catch (...) {
+        qDebug() << "未知异常";
+        QMessageBox::critical(this, "错误", "添加记录时发生未知异常");
+    }
+
+    qDebug() << "=== 添加就诊记录结束 ===";
 }
 
 
@@ -73,12 +78,12 @@ void VisitView::on_btDelete_clicked()
 
 void VisitView::on_btModify_clicked()
 {
-    QModelIndex curIndex = IDatabase::getInstance().theVisitSelection->currentIndex();
-    if (!curIndex.isValid()) {
-        QMessageBox::warning(this, "修改失败", "请先选择一条记录");
+    if (!IDatabase::getInstance().theVisitSelection->hasSelection()) {
+        QMessageBox::warning(this, "提示", "请先选择一条记录");
         return;
     }
 
+    QModelIndex curIndex = IDatabase::getInstance().theVisitSelection->currentIndex();
     emit goVisitEditView(curIndex.row());
 }
 

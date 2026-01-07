@@ -1,7 +1,5 @@
 #include "idatabase.h"
 #include <QUuid>
-#include <QSqlRelationalTableModel>
-#include <QSqlRelation>
 
 void IDatabase::initDatabase()
 {
@@ -233,37 +231,23 @@ void IDatabase::revertDepartmentEdit()
 
 bool IDatabase::initVisitModel()
 {
-    // 改为使用关系表模型
-    visitTabModel = new QSqlRelationalTableModel(this, dataBase);
+    visitTabModel = new QSqlTableModel(this, dataBase);
     visitTabModel->setTable("Visit_Record");
     visitTabModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    visitTabModel->setSort(visitTabModel->fieldIndex("VISITTIME"), Qt::AscendingOrder);
-
-    // 设置关系：将ID字段关联到其他表的名称字段
-    // 患者ID -> 患者姓名
-    visitTabModel->setRelation(visitTabModel->fieldIndex("PATIENT_ID"),
-                               QSqlRelation("Patient", "PATIENT_ID", "NAME"));
-
-    // 医生ID -> 医生姓名
-    visitTabModel->setRelation(visitTabModel->fieldIndex("DOCTOR_ID"),
-                               QSqlRelation("Doctor", "Doctor_ID", "NAME"));
-
-    // 科室ID -> 科室名称
-    visitTabModel->setRelation(visitTabModel->fieldIndex("DEPARTMENT_ID"),
-                               QSqlRelation("Department", "DEPARTMENT_ID", "NAME"));
+    visitTabModel->setSort(visitTabModel->fieldIndex("VISIT_ID"), Qt::AscendingOrder);
 
     // 设置中文表头
-    visitTabModel->setHeaderData(visitTabModel->fieldIndex("VISIT_ID"), Qt::Horizontal, "记录ID");
-    visitTabModel->setHeaderData(visitTabModel->fieldIndex("PATIENT_ID"), Qt::Horizontal, "患者ID");
-    visitTabModel->setHeaderData(visitTabModel->fieldIndex("DOCTOR_ID"), Qt::Horizontal, "医生ID");
+    visitTabModel->setHeaderData(visitTabModel->fieldIndex("VISIT_ID"), Qt::Horizontal, "ID");
     visitTabModel->setHeaderData(visitTabModel->fieldIndex("DEPARTMENT_ID"), Qt::Horizontal, "科室ID");
-    visitTabModel->setHeaderData(visitTabModel->fieldIndex("VISITTIME"), Qt::Horizontal, "就诊日期");
+    visitTabModel->setHeaderData(visitTabModel->fieldIndex("DOCTOR_ID"), Qt::Horizontal, "医生ID");
+    visitTabModel->setHeaderData(visitTabModel->fieldIndex("PATIENT_ID"), Qt::Horizontal, "患者ID");
+    visitTabModel->setHeaderData(visitTabModel->fieldIndex("VISITTIME"), Qt::Horizontal, "就诊时间");
     visitTabModel->setHeaderData(visitTabModel->fieldIndex("SYMPTOMS"), Qt::Horizontal, "症状");
-    visitTabModel->setHeaderData(visitTabModel->fieldIndex("DIAGNOSIS"), Qt::Horizontal, "诊断");
+    visitTabModel->setHeaderData(visitTabModel->fieldIndex("DIAGNOSIS"), Qt::Horizontal, "诊断结果");
     visitTabModel->setHeaderData(visitTabModel->fieldIndex("PRESCRIPTION"), Qt::Horizontal, "处方");
     visitTabModel->setHeaderData(visitTabModel->fieldIndex("CREATEDTIMESTAMP"), Qt::Horizontal, "创建时间");
 
-    if (!visitTabModel->select()) {
+    if (!(visitTabModel->select())) {
         return false;
     }
 
@@ -273,17 +257,41 @@ bool IDatabase::initVisitModel()
 
 int IDatabase::addNewVisit()
 {
-    visitTabModel->insertRow(visitTabModel->rowCount(), QModelIndex());
-    QModelIndex curIndex = visitTabModel->index(visitTabModel->rowCount() - 1, 1);
+    int rowCount = visitTabModel->rowCount();
+    qDebug() << "addNewVisit - 当前行数:" << rowCount;
 
-    int curRecNO = curIndex.row();
-    QSqlRecord curRec = visitTabModel->record(curRecNO);
-    curRec.setValue("CREATEDTIMESTAMP", QDateTime::currentDateTime().toString("yyyy-MM-dd"));
-    curRec.setValue("Visit_ID", QUuid::createUuid().toString(QUuid::WithoutBraces));
+    // 获取下一个可用的整数ID
+    int nextId = 1;
+    QSqlQuery maxQuery("SELECT MAX(VISIT_ID) FROM Visit_Record");
+    if (maxQuery.exec() && maxQuery.next()) {
+        int maxId = maxQuery.value(0).toInt();
+        nextId = maxId + 1;
+    }
 
-    visitTabModel->setRecord(curRecNO, curRec);
+    qDebug() << "下一个可用的ID:" << nextId;
 
-    return curIndex.row();
+    // 插入新行
+    bool success = visitTabModel->insertRow(rowCount);
+    qDebug() << "插入行结果:" << success;
+
+    if (!success) {
+        qDebug() << "插入行失败:" << visitTabModel->lastError().text();
+        return -1;
+    }
+
+    // 获取新行的索引
+    QModelIndex newIndex = visitTabModel->index(rowCount, 0);
+    qDebug() << "新行索引:" << newIndex.row();
+
+    // 设置整数ID
+    visitTabModel->setData(newIndex, nextId);
+
+    // 设置创建日期
+    QModelIndex createDateIndex = visitTabModel->index(rowCount, visitTabModel->fieldIndex("CREATEDTIMESTAMP"));
+    visitTabModel->setData(createDateIndex, QDate::currentDate().toString("yyyy-MM-dd"));
+
+    qDebug() << "addNewVisit完成，返回行号:" << newIndex.row();
+    return newIndex.row();
 }
 
 bool IDatabase::searchVisit(QString filter)
