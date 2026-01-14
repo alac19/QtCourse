@@ -104,7 +104,8 @@ bool IDatabase::initDoctorModel()
     doctorTabModel->setHeaderData(doctorTabModel->fieldIndex("DOCTOR_ID"), Qt::Horizontal, "ID");
     doctorTabModel->setHeaderData(doctorTabModel->fieldIndex("NAME"), Qt::Horizontal, "姓名");
     doctorTabModel->setHeaderData(doctorTabModel->fieldIndex("EMPLOYEENO"), Qt::Horizontal, "工号");
-    doctorTabModel->setHeaderData(doctorTabModel->fieldIndex("DEPARTMENT_ID"), Qt::Horizontal, "科室ID");
+    // doctorTabModel->setHeaderData(doctorTabModel->fieldIndex("DEPARTMENT_ID"), Qt::Horizontal, "科室ID");
+    doctorTabModel->setHeaderData(doctorTabModel->fieldIndex("DEPARTMENT_NAME"), Qt::Horizontal, "所属科室"); // 新增
 
     if (!(doctorTabModel->select())) {
         return false;
@@ -116,16 +117,32 @@ bool IDatabase::initDoctorModel()
 
 int IDatabase::addNewDoctor()
 {
-    doctorTabModel->insertRow(doctorTabModel->rowCount(), QModelIndex());
-    QModelIndex curIndex = doctorTabModel->index(doctorTabModel->rowCount() - 1, 1);
-    int curRecNO = curIndex.row();
-    QSqlRecord curRec = doctorTabModel->record(curRecNO);
-    curRec.setValue("DOCTOR_ID", QUuid::createUuid().toString(QUuid::WithoutBraces));
+    int rowCount = doctorTabModel->rowCount();
 
-    doctorTabModel->setRecord(curRecNO, curRec);
+    // 插入新行
+    bool success = doctorTabModel->insertRow(rowCount);
 
-    // 如果有需要，可以设置默认值
-    return curIndex.row();
+    if (!success) {
+        qDebug() << "插入新行失败";
+        return -1;
+    }
+
+    // 获取新行的索引
+    QModelIndex newIndex = doctorTabModel->index(rowCount, 0);
+
+    // 手动设置ID
+    QString newId = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    doctorTabModel->setData(newIndex, newId);
+
+    // 自动生成工号
+    QString newEmployeeNo = generateNextEmployeeNo();
+    if (!newEmployeeNo.isEmpty()) {
+        int employeeNoCol = doctorTabModel->fieldIndex("EMPLOYEENO");
+        QModelIndex employeeNoIndex = doctorTabModel->index(rowCount, employeeNoCol);
+        doctorTabModel->setData(employeeNoIndex, newEmployeeNo);
+    }
+
+    return newIndex.row();
 }
 
 bool IDatabase::searchDoctor(QString filter)
@@ -238,9 +255,13 @@ bool IDatabase::initVisitModel()
 
     // 设置中文表头
     visitTabModel->setHeaderData(visitTabModel->fieldIndex("VISIT_ID"), Qt::Horizontal, "ID");
-    visitTabModel->setHeaderData(visitTabModel->fieldIndex("DEPARTMENT_ID"), Qt::Horizontal, "科室ID");
-    visitTabModel->setHeaderData(visitTabModel->fieldIndex("DOCTOR_ID"), Qt::Horizontal, "医生ID");
-    visitTabModel->setHeaderData(visitTabModel->fieldIndex("PATIENT_ID"), Qt::Horizontal, "患者ID");
+    // 隐藏ID字段（因为用户不需要看到UUID）
+    // visitTabModel->setHeaderData(visitTabModel->fieldIndex("DEPARTMENT_ID"), Qt::Horizontal, "科室ID");
+    // visitTabModel->setHeaderData(visitTabModel->fieldIndex("DOCTOR_ID"), Qt::Horizontal, "医生ID");
+    // visitTabModel->setHeaderData(visitTabModel->fieldIndex("PATIENT_ID"), Qt::Horizontal, "患者ID");
+    visitTabModel->setHeaderData(visitTabModel->fieldIndex("DEPARTMENT_NAME"), Qt::Horizontal, "科室名称");
+    visitTabModel->setHeaderData(visitTabModel->fieldIndex("DOCTOR_NAME"), Qt::Horizontal, "医生姓名");
+    visitTabModel->setHeaderData(visitTabModel->fieldIndex("PATIENT_NAME"), Qt::Horizontal, "患者姓名");
     visitTabModel->setHeaderData(visitTabModel->fieldIndex("VISITTIME"), Qt::Horizontal, "就诊时间");
     visitTabModel->setHeaderData(visitTabModel->fieldIndex("SYMPTOMS"), Qt::Horizontal, "症状");
     visitTabModel->setHeaderData(visitTabModel->fieldIndex("DIAGNOSIS"), Qt::Horizontal, "诊断结果");
@@ -265,6 +286,11 @@ int IDatabase::addNewVisit()
 
     // 插入新行
     bool success = visitTabModel->insertRow(rowCount);
+
+    if (!success) {
+        qDebug() << "插入新行失败";
+        return -1;
+    }
 
     // 获取新行的索引
     QModelIndex newIndex = visitTabModel->index(rowCount, 0);
@@ -334,6 +360,29 @@ QString IDatabase::userLogin(QString userName, QString passWord)
         qDebug() << "no such user";
         return "wrongUsername";
     }
+}
+
+QString IDatabase::generateNextEmployeeNo()
+{
+    QSqlQuery query;
+
+    // 查询当前最大的工号
+    // 注意：工号是字符串，需要转换为数字进行排序
+    query.exec("SELECT MAX(CAST(EMPLOYEENO AS INTEGER)) as max_no FROM Doctor");
+
+    int maxNo = 0;
+    if (query.next()) {
+        QVariant maxNoVar = query.value("max_no");
+        if (maxNoVar.isValid() && !maxNoVar.isNull()) {
+            maxNo = maxNoVar.toInt();
+        }
+    }
+
+    // 下一个工号
+    int nextNo = maxNo + 1;
+
+    // 格式化为4位数，不足前面补0
+    return QString("%1").arg(nextNo, 4, 10, QChar('0'));
 }
 
 IDatabase::IDatabase(QObject *parent)

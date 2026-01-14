@@ -151,9 +151,15 @@ void VisitEditView::on_btSave_clicked()
     int row = currentIndex;
 
     // 获取选中的ID - 改为字符串
+    // 获取选中的ID和名称
     QString patientId = ui->comboPatient->currentData().toString();
+    QString patientName = ui->comboPatient->currentText();  // 新增：获取名称
+
     QString doctorId = ui->comboDoctor->currentData().toString();
+    QString doctorName = ui->comboDoctor->currentText();    // 新增：获取名称
+
     QString departmentId = ui->comboDepartment->currentData().toString();
+    QString departmentName = ui->comboDepartment->currentText(); // 新增：获取名称
 
     qDebug() << "选中的ID - 患者:" << patientId << "医生:" << doctorId << "科室:" << departmentId;
 
@@ -201,6 +207,12 @@ void VisitEditView::on_btSave_clicked()
     model->setData(model->index(row, model->fieldIndex("PATIENT_ID")), patientId);
     model->setData(model->index(row, model->fieldIndex("DOCTOR_ID")), doctorId);
     model->setData(model->index(row, model->fieldIndex("DEPARTMENT_ID")), departmentId);
+
+    // 新增：设置名称字段
+    model->setData(model->index(row, model->fieldIndex("PATIENT_NAME")), patientName);
+    model->setData(model->index(row, model->fieldIndex("DOCTOR_NAME")), doctorName);
+    model->setData(model->index(row, model->fieldIndex("DEPARTMENT_NAME")), departmentName);
+
     model->setData(model->index(row, model->fieldIndex("VISITTIME")),
                    visitDate.toString("yyyy-MM-dd"));
     model->setData(model->index(row, model->fieldIndex("SYMPTOMS")),

@@ -22,9 +22,17 @@ private slots:
 
     void on_btCancel_clicked();
 
+    void onDepartmentChanged(int index);  // 新增
+
 private:
     Ui::doctorEditView *ui;
     QDataWidgetMapper *dataMapper;   // 数据映射
+
+    // 新增
+    int currentIndex;
+
+    void initComboBoxes();  // 初始化下拉框
+    void loadDoctorData(int row);  // 加载医生数据
 
 signals:
     void goPreviousView();

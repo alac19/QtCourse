@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QtSql>
 #include <QSqlDatabase>
+
 class IDatabase : public QObject
 {
     Q_OBJECT
@@ -15,6 +16,8 @@ public:
     }
 
     QString userLogin(QString userName, QString Password);
+
+    QString generateNextEmployeeNo();  // 新增
 
 private:
     explicit IDatabase(QObject *parent = nullptr);
@@ -69,7 +72,7 @@ public:
     QSqlTableModel *departmentTabModel;            // 科室数据模型
     QItemSelectionModel *theDepartmentSelection;   // 科室选择模型
 
-    QSqlRelationalTableModel *visitTabModel;            // 就诊记录数据模型
+    QSqlTableModel *visitTabModel;            // 就诊记录数据模型
     QItemSelectionModel *theVisitSelection;   // 就诊记录选择模型
 };
 

@@ -20,6 +20,12 @@ VisitView::VisitView(QWidget *parent) :
     if(iDatabase.initVisitModel()) {
         ui->tableView->setModel(iDatabase.visitTabModel);
         ui->tableView->setSelectionModel(iDatabase.theVisitSelection);
+
+        // 直接隐藏前4列（假设顺序是：VISIT_ID, DEPARTMENT_ID, DOCTOR_ID, PATIENT_ID）
+        // ui->tableView->hideColumn(0); // VISIT_ID
+        ui->tableView->hideColumn(1); // DEPARTMENT_ID
+        ui->tableView->hideColumn(2); // DOCTOR_ID
+        ui->tableView->hideColumn(3); // PATIENT_ID
     }
 }
 
@@ -30,8 +36,17 @@ VisitView::~VisitView()
 
 void VisitView::on_btSearch_clicked()
 {
-    QString filter = QString("visit_id like '%%1%'").arg(ui->txtSearch->text());
-    IDatabase::getInstance().searchVisit(filter);
+    QString searchText = ui->txtSearch->text();
+    if (searchText.isEmpty()) {
+        // 清空筛选，显示所有记录
+        IDatabase::getInstance().visitTabModel->setFilter("");
+    } else {
+        // 可以按患者姓名、医生姓名、科室名称搜索
+        QString filter = QString(
+                             "PATIENT_NAME LIKE '%%1%' OR DOCTOR_NAME LIKE '%%1%' OR DEPARTMENT_NAME LIKE '%%1%'"
+                         ).arg(searchText);
+        IDatabase::getInstance().searchVisit(filter);
+    }
 }
 
 
