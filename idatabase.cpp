@@ -21,7 +21,7 @@ bool IDatabase::initPatientModel()
     patientTabModel->setTable("patient");
     patientTabModel->setEditStrategy(
         QSqlTableModel::OnManualSubmit);   // 数据保存方式
-    patientTabModel->setSort(patientTabModel->fieldIndex("name"), Qt::AscendingOrder);
+    patientTabModel->setSort(patientTabModel->fieldIndex("CREATEDTIMESTAMP"), Qt::AscendingOrder);
 
 
     // 设置中文表头
@@ -98,7 +98,7 @@ bool IDatabase::initDoctorModel()
     doctorTabModel = new QSqlTableModel(this, dataBase);
     doctorTabModel->setTable("doctor");
     doctorTabModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    doctorTabModel->setSort(doctorTabModel->fieldIndex("name"), Qt::AscendingOrder);
+    doctorTabModel->setSort(doctorTabModel->fieldIndex("EMPLOYEENO"), Qt::AscendingOrder);
 
     // 设置中文表头
     doctorTabModel->setHeaderData(doctorTabModel->fieldIndex("DOCTOR_ID"), Qt::Horizontal, "ID");
@@ -184,7 +184,7 @@ bool IDatabase::initDepartmentModel()
     departmentTabModel = new QSqlTableModel(this, dataBase);
     departmentTabModel->setTable("department");
     departmentTabModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    departmentTabModel->setSort(departmentTabModel->fieldIndex("name"), Qt::AscendingOrder);
+    departmentTabModel->setSort(departmentTabModel->fieldIndex("NAME"), Qt::AscendingOrder);
 
     // 设置中文表头
     departmentTabModel->setHeaderData(departmentTabModel->fieldIndex("DEPARTMENT_ID"), Qt::Horizontal, "ID");
@@ -251,7 +251,7 @@ bool IDatabase::initVisitModel()
     visitTabModel = new QSqlTableModel(this, dataBase);
     visitTabModel->setTable("Visit_Record");
     visitTabModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    visitTabModel->setSort(visitTabModel->fieldIndex("VISIT_ID"), Qt::AscendingOrder);
+    visitTabModel->setSort(visitTabModel->fieldIndex("CREATEDTIMESTAMP"), Qt::AscendingOrder);
 
     // 设置中文表头
     visitTabModel->setHeaderData(visitTabModel->fieldIndex("VISIT_ID"), Qt::Horizontal, "ID");
