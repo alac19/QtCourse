@@ -21,7 +21,7 @@ doctorEditView::doctorEditView(QWidget *parent, int index) :
 
     dataMapper->setCurrentIndex(index);
 
-    ui->dbEditID->setEnabled(false);
+    // ui->dbEditID->setEnabled(false);
 }
 
 doctorEditView::~doctorEditView()

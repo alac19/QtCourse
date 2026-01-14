@@ -19,7 +19,7 @@ DepartmentEditView::DepartmentEditView(QWidget *parent, int index) :
 
     dataMapper->setCurrentIndex(index);
 
-    ui->dbEditID->setEnabled(false);
+    // ui->dbEditID->setEnabled(false);
 }
 
 DepartmentEditView::~DepartmentEditView()

@@ -22,11 +22,12 @@ private slots:
 
     void on_btCancel_clicked();
 
-    void onDoctorSelected(int index);
+    void onDepartmentChanged(int index);
 
 private:
     void initComboBoxes();  // 初始化下拉框
-    void loadDoctorByDepartment(int departmentId); // 根据科室加载医生
+    void loadDoctorByDepartment(const QString &departmentId); // 根据科室加载医生
+    void loadRecord(int row);
 
 private:
     Ui::VisitEditView *ui;

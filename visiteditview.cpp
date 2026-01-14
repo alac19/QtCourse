@@ -39,13 +39,12 @@ VisitEditView::VisitEditView(QWidget *parent, int index) :
         if (ui->comboPatient->count() > 0) ui->comboPatient->setCurrentIndex(0);
         if (ui->comboDepartment->count() > 0) {
             ui->comboDepartment->setCurrentIndex(0);
-            int firstDeptId = ui->comboDepartment->itemData(0).toInt();
+            // 改为字符串
+            QString firstDeptId = ui->comboDepartment->itemData(0).toString();
             loadDoctorByDepartment(firstDeptId);
             if (ui->comboDoctor->count() > 0) ui->comboDoctor->setCurrentIndex(0);
         }
     }
-
-    ui->dbEditID->setEnabled(false);
 
     // 连接科室选择信号
     connect(ui->comboDepartment, SIGNAL(currentIndexChanged(int)),
@@ -87,9 +86,9 @@ void VisitEditView::loadRecord(int row)
         ui->dateEditCreatedTimeStamp->setDate(QDate::currentDate());
     }
 
-    // 设置下拉框选中项
-    int patientId = record.value("PATIENT_ID").toInt();
-    int deptId = record.value("DEPARTMENT_ID").toInt();
+    // 设置下拉框选中项 - 改为字符串
+    QString patientId = record.value("PATIENT_ID").toString();
+    QString deptId = record.value("DEPARTMENT_ID").toString();
 
     // 设置患者
     int patientIndex = ui->comboPatient->findData(patientId);
@@ -104,11 +103,11 @@ void VisitEditView::loadRecord(int row)
     if (deptIndex >= 0) {
         ui->comboDepartment->setCurrentIndex(deptIndex);
 
-        // 加载该科室的医生
+        // 加载该科室的医生 - 使用字符串ID
         loadDoctorByDepartment(deptId);
 
         // 设置医生
-        int doctorId = record.value("DOCTOR_ID").toInt();
+        QString doctorId = record.value("DOCTOR_ID").toString();
         int doctorIndex = ui->comboDoctor->findData(doctorId);
         if (doctorIndex >= 0) {
             ui->comboDoctor->setCurrentIndex(doctorIndex);
@@ -118,7 +117,8 @@ void VisitEditView::loadRecord(int row)
     } else {
         if (ui->comboDepartment->count() > 0) {
             ui->comboDepartment->setCurrentIndex(0);
-            int firstDeptId = ui->comboDepartment->itemData(0).toInt();
+            // 改为字符串
+            QString firstDeptId = ui->comboDepartment->itemData(0).toString();
             loadDoctorByDepartment(firstDeptId);
             if (ui->comboDoctor->count() > 0) ui->comboDoctor->setCurrentIndex(0);
         }
@@ -129,10 +129,18 @@ void VisitEditView::loadRecord(int row)
 void VisitEditView::on_btSave_clicked()
 {
     // 验证数据
-    if (ui->comboPatient->currentIndex() < 0 ||
-            ui->comboDoctor->currentIndex() < 0 ||
-            ui->comboDepartment->currentIndex() < 0) {
-        QMessageBox::warning(this, "保存失败", "请选择患者、医生和科室");
+    if (ui->comboDepartment->currentIndex() < 0) {
+        QMessageBox::warning(this, "保存失败", "请选择科室");
+        return;
+    }
+
+    if (ui->comboDoctor->currentIndex() < 0) {
+        QMessageBox::warning(this, "保存失败", "请选择医生");
+        return;
+    }
+
+    if (ui->comboPatient->currentIndex() < 0) {
+        QMessageBox::warning(this, "保存失败", "请选择患者");
         return;
     }
 
@@ -141,29 +149,20 @@ void VisitEditView::on_btSave_clicked()
 
     // 判断是新增还是修改
     int row = currentIndex;
-    bool isNewRecord = (row >= model->rowCount());
 
-    if (isNewRecord) {
-        // 新增记录
-        row = IDatabase::getInstance().addNewVisit();
-        qDebug() << "新增记录，行号:" << row;
-    } else {
-        qDebug() << "修改记录，行号:" << row;
-    }
-
-    // 获取选中的ID
-    int patientId = ui->comboPatient->currentData().toInt();
-    int doctorId = ui->comboDoctor->currentData().toInt();
-    int departmentId = ui->comboDepartment->currentData().toInt();
+    // 获取选中的ID - 改为字符串
+    QString patientId = ui->comboPatient->currentData().toString();
+    QString doctorId = ui->comboDoctor->currentData().toString();
+    QString departmentId = ui->comboDepartment->currentData().toString();
 
     qDebug() << "选中的ID - 患者:" << patientId << "医生:" << doctorId << "科室:" << departmentId;
 
-    // 验证ID是否在数据库中真实存在
+    // 验证ID是否在数据库中真实存在 - 使用字符串查询
     QSqlQuery checkQuery;
 
     // 检查患者是否存在
     checkQuery.prepare("SELECT COUNT(*) FROM Patient WHERE PATIENT_ID = ?");
-    checkQuery.addBindValue(patientId);
+    checkQuery.addBindValue(patientId); // 传递字符串
     if (checkQuery.exec() && checkQuery.next()) {
         if (checkQuery.value(0).toInt() == 0) {
             QMessageBox::warning(this, "保存失败", "选择的患者不存在");
@@ -173,7 +172,7 @@ void VisitEditView::on_btSave_clicked()
 
     // 检查医生是否存在
     checkQuery.prepare("SELECT COUNT(*) FROM Doctor WHERE Doctor_ID = ?");
-    checkQuery.addBindValue(doctorId);
+    checkQuery.addBindValue(doctorId); // 传递字符串
     if (checkQuery.exec() && checkQuery.next()) {
         if (checkQuery.value(0).toInt() == 0) {
             QMessageBox::warning(this, "保存失败", "选择的医生不存在");
@@ -183,7 +182,7 @@ void VisitEditView::on_btSave_clicked()
 
     // 检查科室是否存在
     checkQuery.prepare("SELECT COUNT(*) FROM Department WHERE DEPARTMENT_ID = ?");
-    checkQuery.addBindValue(departmentId);
+    checkQuery.addBindValue(departmentId); // 传递字符串
     if (checkQuery.exec() && checkQuery.next()) {
         if (checkQuery.value(0).toInt() == 0) {
             QMessageBox::warning(this, "保存失败", "选择的科室不存在");
@@ -198,7 +197,7 @@ void VisitEditView::on_btSave_clicked()
     qDebug() << "就诊日期:" << visitDate.toString("yyyy-MM-dd");
     qDebug() << "创建日期:" << createDate.toString("yyyy-MM-dd");
 
-    // 手动设置所有字段到模型
+    // 手动设置所有字段到模型 - 使用字符串ID
     model->setData(model->index(row, model->fieldIndex("PATIENT_ID")), patientId);
     model->setData(model->index(row, model->fieldIndex("DOCTOR_ID")), doctorId);
     model->setData(model->index(row, model->fieldIndex("DEPARTMENT_ID")), departmentId);
@@ -212,13 +211,6 @@ void VisitEditView::on_btSave_clicked()
                    ui->dbEditPrescription->text());
     model->setData(model->index(row, model->fieldIndex("CREATEDTIMESTAMP")),
                    createDate.toString("yyyy-MM-dd"));
-
-    // 如果是新增记录，还需要设置VISIT_ID
-    if (isNewRecord) {
-        QString newId = QUuid::createUuid().toString(QUuid::WithoutBraces);
-        model->setData(model->index(row, model->fieldIndex("VISIT_ID")), newId);
-        qDebug() << "新记录的ID:" << newId;
-    }
 
     // 调试：打印所有设置的值
     for (int i = 0; i < model->columnCount(); ++i) {
@@ -249,7 +241,8 @@ void VisitEditView::on_btCancel_clicked()
 void VisitEditView::onDepartmentChanged(int index)
 {
     if (index >= 0) {
-        int departmentId = ui->comboDepartment->itemData(index).toInt();
+        // 改为字符串
+        QString departmentId = ui->comboDepartment->itemData(index).toString();
         loadDoctorByDepartment(departmentId);
     }
 }
@@ -261,40 +254,44 @@ void VisitEditView::initComboBoxes()
     ui->comboDoctor->clear();
     ui->comboDepartment->clear();
 
-    // 加载患者数据
+    // 加载患者数据 - ID是字符串
     QSqlQuery queryPatient("SELECT PATIENT_ID, NAME FROM Patient ORDER BY NAME");
     while (queryPatient.next()) {
-        int id = queryPatient.value("PATIENT_ID").toInt();
+        // 改为字符串
+        QString id = queryPatient.value("PATIENT_ID").toString();
         QString name = queryPatient.value("NAME").toString();
         ui->comboPatient->addItem(name, id);
     }
 
-    // 加载科室数据
+    // 加载科室数据 - ID是字符串
     QSqlQuery queryDept("SELECT DEPARTMENT_ID, NAME FROM Department ORDER BY NAME");
     while (queryDept.next()) {
-        int id = queryDept.value("DEPARTMENT_ID").toInt();
+        // 改为字符串
+        QString id = queryDept.value("DEPARTMENT_ID").toString();
         QString name = queryDept.value("NAME").toString();
         ui->comboDepartment->addItem(name, id);
     }
 
     // 默认加载第一个科室的医生
     if (ui->comboDepartment->count() > 0) {
-        int firstDeptId = ui->comboDepartment->itemData(0).toInt();
+        // 改为字符串
+        QString firstDeptId = ui->comboDepartment->itemData(0).toString();
         loadDoctorByDepartment(firstDeptId);
     }
 }
 
-void VisitEditView::loadDoctorByDepartment(int departmentId)
+void VisitEditView::loadDoctorByDepartment(const QString &departmentId)
 {
     ui->comboDoctor->clear();
 
     QSqlQuery query;
     query.prepare("SELECT Doctor_ID, NAME FROM Doctor WHERE DEPARTMENT_ID = ? ORDER BY NAME");
-    query.addBindValue(departmentId);
+    query.addBindValue(departmentId); // 传递字符串
 
     if (query.exec()) {
         while (query.next()) {
-            int id = query.value("Doctor_ID").toInt();
+            // 改为字符串
+            QString id = query.value("Doctor_ID").toString();
             QString name = query.value("NAME").toString();
             ui->comboDoctor->addItem(name, id);
         }

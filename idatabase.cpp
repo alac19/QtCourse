@@ -53,8 +53,8 @@ int IDatabase::addNewPatient()
 
     int curRecNO = curIndex.row();
     QSqlRecord curRec = patientTabModel->record(curRecNO);
-    curRec.setValue("CREATEDTIMESTAMP", QDateTime::currentDateTime().toString("yyyy-MM-dd"));
     curRec.setValue("PATIENT_ID", QUuid::createUuid().toString(QUuid::WithoutBraces));
+    // curRec.setValue("CREATEDTIMESTAMP", QDateTime::currentDateTime().toString("yyyy-MM-dd"));
 
     patientTabModel->setRecord(curRecNO, curRec);
 
@@ -252,45 +252,28 @@ bool IDatabase::initVisitModel()
     }
 
     theVisitSelection = new QItemSelectionModel(visitTabModel);
+
     return true;
 }
 
 int IDatabase::addNewVisit()
 {
+    // visitTabModel->insertRow(visitTabModel->rowCount(), QModelIndex());
+    // QModelIndex curIndex = visitTabModel->index(visitTabModel->rowCount() - 1, 1);
+
     int rowCount = visitTabModel->rowCount();
-    qDebug() << "addNewVisit - 当前行数:" << rowCount;
-
-    // 获取下一个可用的整数ID
-    int nextId = 1;
-    QSqlQuery maxQuery("SELECT MAX(VISIT_ID) FROM Visit_Record");
-    if (maxQuery.exec() && maxQuery.next()) {
-        int maxId = maxQuery.value(0).toInt();
-        nextId = maxId + 1;
-    }
-
-    qDebug() << "下一个可用的ID:" << nextId;
 
     // 插入新行
     bool success = visitTabModel->insertRow(rowCount);
-    qDebug() << "插入行结果:" << success;
-
-    if (!success) {
-        qDebug() << "插入行失败:" << visitTabModel->lastError().text();
-        return -1;
-    }
 
     // 获取新行的索引
     QModelIndex newIndex = visitTabModel->index(rowCount, 0);
-    qDebug() << "新行索引:" << newIndex.row();
 
-    // 设置整数ID
-    visitTabModel->setData(newIndex, nextId);
 
-    // 设置创建日期
-    QModelIndex createDateIndex = visitTabModel->index(rowCount, visitTabModel->fieldIndex("CREATEDTIMESTAMP"));
-    visitTabModel->setData(createDateIndex, QDate::currentDate().toString("yyyy-MM-dd"));
+    // 手动设置ID
+    QString newId = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    visitTabModel->setData(newIndex, newId);
 
-    qDebug() << "addNewVisit完成，返回行号:" << newIndex.row();
     return newIndex.row();
 }
 
