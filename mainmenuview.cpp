@@ -15,12 +15,12 @@ MainMenuView::~MainMenuView()
 
 void MainMenuView::on_btManagement_clicked()
 {
-
+    emit goManagementView();
 }
 
 
 void MainMenuView::on_btAppointment_clicked()
 {
-
+    emit goAppointmentView();
 }
 

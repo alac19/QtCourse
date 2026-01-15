@@ -15,18 +15,18 @@ AppointmentView::~AppointmentView()
 
 void AppointmentView::on_btVisit_clicked()
 {
-
+    emit goVisitView();
 }
 
 
 void AppointmentView::on_btAppointment_clicked()
 {
-
+    emit goAppointmentManageView();
 }
 
 
 void AppointmentView::on_btSchedule_clicked()
 {
-
+    emit goScheduleView();
 }
 
