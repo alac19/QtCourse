@@ -35,7 +35,7 @@ public:
     }
 
     // 注册功能
-    bool userRegister(QString username, QString password, UserRole role, QString departmentId = "");
+    bool userRegister(QString username, QString password, UserRole role);
 
     QString generateNextEmployeeNo();  // 新增
 

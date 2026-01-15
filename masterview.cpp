@@ -38,7 +38,7 @@ void MasterView::goRegisterView()
 
     pushWidgetToStackView(registerView);
 
-    connect(registerView, SIGNAL(goBackToLogin()), this, SLOT(goLoginView()));
+    connect(registerView, SIGNAL(goPreviousView()), this, SLOT(goPreviousView()));
 }
 
 void MasterView::goMainMenuView()

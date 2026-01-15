@@ -15,7 +15,7 @@ bool PermissionManager::checkPermission(const QString &moduleName)
     } else if (moduleName == "doctor") {
         return role == ROLE_ADMIN || role == ROLE_DOCTOR; // 管理员和医生可以管理医生信息
     } else if (moduleName == "patient") {
-        return role == ROLE_ADMIN || role == ROLE_DOCTOR || role == ROLE_PATIENT;
+        return role == ROLE_ADMIN || role == ROLE_PATIENT;
     } else if (moduleName == "medicine") {
         return role == ROLE_ADMIN || role == ROLE_DOCTOR; // 药方管理
     } else if (moduleName == "visit") {

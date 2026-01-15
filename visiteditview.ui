@@ -227,6 +227,19 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>dateEditVisitDate</tabstop>
+  <tabstop>dbEditSymptoms</tabstop>
+  <tabstop>dbEditDiagnosis</tabstop>
+  <tabstop>dbEditPrescription</tabstop>
+  <tabstop>dateEditCreatedTimeStamp</tabstop>
+  <tabstop>btSave</tabstop>
+  <tabstop>btCancel</tabstop>
+  <tabstop>dbEditID</tabstop>
+  <tabstop>comboDepartment</tabstop>
+  <tabstop>comboDoctor</tabstop>
+  <tabstop>comboPatient</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

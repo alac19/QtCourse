@@ -372,7 +372,7 @@ QString IDatabase::userLogin(QString userName, QString passWord)
     }
 }
 
-bool IDatabase::userRegister(QString username, QString password, UserRole role, QString departmentId)
+bool IDatabase::userRegister(QString username, QString password, UserRole role)
 {
     qDebug() << "=== 开始注册用户 ===";
     qDebug() << "用户名:" << username;

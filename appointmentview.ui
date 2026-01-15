@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>就诊与排班</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QHBoxLayout" name="horizontalLayout_2">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>

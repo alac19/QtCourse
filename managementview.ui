@@ -92,6 +92,12 @@ QPushButton:hover {
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>btDepartment</tabstop>
+  <tabstop>btDoctor</tabstop>
+  <tabstop>btPatient</tabstop>
+  <tabstop>btMedicine</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
