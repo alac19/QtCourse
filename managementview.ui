@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ManagementView</class>
+ <widget class="QWidget" name="ManagementView">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>417</width>
+    <height>239</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="1">
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>68</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="1" column="0">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>103</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="1" column="1">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="1">
+      <widget class="QPushButton" name="btDoctor">
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    border: 1px solid #ccc; /* 浅灰色边框 */
+    background-color: #f0f0f0; /* 浅灰背景 */
+    padding: 8px 16px; /* 内边距 */
+    font-size: 14px;
+}
+QPushButton:hover {
+    background-color: #e0e0e0; /*  hover效果 */
+}</string>
+       </property>
+       <property name="text">
+        <string>医生管理</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="btPatient">
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    border: 1px solid #ccc; /* 浅灰色边框 */
+    background-color: #f0f0f0; /* 浅灰背景 */
+    padding: 8px 16px; /* 内边距 */
+    font-size: 14px;
+}
+QPushButton:hover {
+    background-color: #e0e0e0; /*  hover效果 */
+}</string>
+       </property>
+       <property name="text">
+        <string>患者管理</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QPushButton" name="btDepartment">
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    border: 1px solid #ccc; /* 浅灰色边框 */
+    background-color: #f0f0f0; /* 浅灰背景 */
+    padding: 8px 16px; /* 内边距 */
+    font-size: 14px;
+}
+QPushButton:hover {
+    background-color: #e0e0e0; /*  hover效果 */
+}</string>
+       </property>
+       <property name="text">
+        <string>科室管理</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QPushButton" name="btMedicine">
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    border: 1px solid #ccc; /* 浅灰色边框 */
+    background-color: #f0f0f0; /* 浅灰背景 */
+    padding: 8px 16px; /* 内边距 */
+    font-size: 14px;
+}
+QPushButton:hover {
+    background-color: #e0e0e0; /*  hover效果 */
+}</string>
+       </property>
+       <property name="text">
+        <string>药方管理</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="2">
+    <spacer name="horizontalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>102</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="2" column="1">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>67</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

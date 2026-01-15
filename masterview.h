@@ -3,7 +3,11 @@
 
 #include <QWidget>
 #include "loginview.h"
-#include "welcomeview.h"
+#include "registerview.h"
+#include "mainmenuview.h"
+#include "managementview.h"
+#include "appointmentview.h"
+// #include "welcomeview.h"
 #include "visitview.h"
 #include "visiteditview.h"
 #include "departmentview.h"
@@ -30,7 +34,11 @@ public:
 
 public slots:
     void goLoginView();
-    void goWelcomeView();
+    void goRegisterView();
+    void goMainMenuView();
+    void goManagementView();
+    void goAppointmentView();
+    // void goWelcomeView();
     void goVisitView();
     void goVisitEditView(int rowNo);
     void goDepartmentView();
@@ -54,7 +62,11 @@ private:
     Ui::MasterView *ui;
 
     LoginView *loginView;
-    WelcomeView *welcomeView;
+    RegisterView *registerView;
+    MainMenuView *mainMenuView;
+    ManagementView *managementView;
+    AppointmentView *appointmentView;
+    // WelcomeView *welcomeView;
     VisitView *visitView;
     VisitEditView *visitEditView;
     DepartmentView *departmentView;

@@ -5,6 +5,14 @@
 #include <QtSql>
 #include <QSqlDatabase>
 
+
+// 角色枚举
+enum UserRole {
+    ROLE_ADMIN = 1,    // 管理员
+    ROLE_DOCTOR = 2,   // 医生
+    ROLE_PATIENT = 3   // 患者
+};
+
 class IDatabase : public QObject
 {
     Q_OBJECT
@@ -15,7 +23,19 @@ public:
         return instance;
     }
 
+    // 用户登录相关
     QString userLogin(QString userName, QString Password);
+    UserRole getCurrentUserRole() const
+    {
+        return currentUserRole;
+    }
+    QString getCurrentUserName() const
+    {
+        return currentUserName;
+    }
+
+    // 注册功能
+    bool userRegister(QString username, QString password, UserRole role, QString departmentId = "");
 
     QString generateNextEmployeeNo();  // 新增
 
@@ -28,6 +48,10 @@ private:
     void operator=(IDatabase const&)  = delete;
 
     QSqlDatabase dataBase;
+
+    // 当前登录用户信息
+    UserRole currentUserRole;
+    QString currentUserName;
 
 signals:
 

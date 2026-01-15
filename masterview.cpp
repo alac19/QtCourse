@@ -1,6 +1,8 @@
 #include "masterview.h"
 #include "ui_masterview.h"
 #include "idatabase.h"
+#include "permissionmanager.h"
+#include <QMessageBox>
 
 MasterView::MasterView(QWidget *parent)
     : QWidget(parent)
@@ -26,23 +28,72 @@ void MasterView::goLoginView()
 
     pushWidgetToStackView(loginView);
 
-    connect(loginView, SIGNAL(loginSuccess()), this, SLOT(goWelcomeView()));
+    connect(loginView, SIGNAL(loginSuccess()), this, SLOT(goMainMenuView()));
+    connect(loginView, SIGNAL(goRegisterView()), this, SLOT(goRegisterView()));
 }
 
-void MasterView::goWelcomeView()
+void MasterView::goRegisterView()
 {
-    welcomeView = new WelcomeView(this);
+    registerView = new RegisterView(this);
 
-    pushWidgetToStackView(welcomeView);
+    pushWidgetToStackView(registerView);
 
-    connect(welcomeView, SIGNAL(goDepartmentView()), this, SLOT(goDepartmentView()));
-    connect(welcomeView, SIGNAL(goDoctorView()), this, SLOT(goDoctorView()));
-    connect(welcomeView, SIGNAL(goPatientView()), this, SLOT(goPatientView()));
-    connect(welcomeView, SIGNAL(goVisitView()), this, SLOT(goVisitView()));
+    connect(registerView, SIGNAL(goBackToLogin()), this, SLOT(goLoginView()));
 }
+
+void MasterView::goMainMenuView()
+{
+    mainMenuView = new MainMenuView(this);
+
+    pushWidgetToStackView(mainMenuView);
+
+    connect(mainMenuView, SIGNAL(goManagementView()), this, SLOT(goManagementView()));
+    connect(mainMenuView, SIGNAL(goAppointmentView()), this, SLOT(goAppointmentView()));
+}
+
+void MasterView::goManagementView()
+{
+    managementView = new ManagementView(this);
+
+    pushWidgetToStackView(managementView);
+
+    connect(managementView, SIGNAL(goDepartmentView()), this, SLOT(goDepartmentView()));
+    connect(managementView, SIGNAL(goDoctorView()), this, SLOT(goDoctorView()));
+    connect(managementView, SIGNAL(goPatientView()), this, SLOT(goPatientView()));
+    connect(managementView, SIGNAL(goMedicineView()), this, SLOT(goMedicineView()));
+}
+
+void MasterView::goAppointmentView()
+{
+    appointmentView = new AppointmentView(this);
+
+    pushWidgetToStackView(appointmentView);
+
+    connect(appointmentView, SIGNAL(goVisitView()), this, SLOT(goVisitView()));
+    connect(appointmentView, SIGNAL(goAppointmentManageView()), this, SLOT(goAppointmentManageView()));
+    connect(appointmentView, SIGNAL(goScheduleView()), this, SLOT(goScheduleView()));
+}
+
+// void MasterView::goWelcomeView()
+// {
+//     welcomeView = new WelcomeView(this);
+
+//     pushWidgetToStackView(welcomeView);
+
+//     connect(welcomeView, SIGNAL(goDepartmentView()), this, SLOT(goDepartmentView()));
+//     connect(welcomeView, SIGNAL(goDoctorView()), this, SLOT(goDoctorView()));
+//     connect(welcomeView, SIGNAL(goPatientView()), this, SLOT(goPatientView()));
+//     connect(welcomeView, SIGNAL(goVisitView()), this, SLOT(goVisitView()));
+// }
 
 void MasterView::goVisitView()
 {
+    if (!PermissionManager::instance().checkPermission("visit")) {
+        QMessageBox::warning(this, "权限不足",
+                             PermissionManager::instance().getPermissionDeniedMessage());
+        return;
+    }
+
     visitView = new VisitView(this);
 
     pushWidgetToStackView(visitView);
@@ -62,6 +113,12 @@ void MasterView::goVisitEditView(int rowNo)
 
 void MasterView::goDepartmentView()
 {
+    if (!PermissionManager::instance().checkPermission("department")) {
+        QMessageBox::warning(this, "权限不足",
+                             PermissionManager::instance().getPermissionDeniedMessage());
+        return;
+    }
+
     departmentView = new DepartmentView(this);
 
     pushWidgetToStackView(departmentView);
@@ -80,6 +137,12 @@ void MasterView::goDepartmentEditView(int rowNo)
 
 void MasterView::goDoctorView()
 {
+    if (!PermissionManager::instance().checkPermission("doctor")) {
+        QMessageBox::warning(this, "权限不足",
+                             PermissionManager::instance().getPermissionDeniedMessage());
+        return;
+    }
+
     doctorView = new DoctorView(this);
 
     pushWidgetToStackView(doctorView);
@@ -98,6 +161,12 @@ void MasterView::goDoctorEditView(int rowNo)
 
 void MasterView::goPatientView()
 {
+    if (!PermissionManager::instance().checkPermission("patient")) {
+        QMessageBox::warning(this, "权限不足",
+                             PermissionManager::instance().getPermissionDeniedMessage());
+        return;
+    }
+
     patientView = new PatientView(this);
 
     pushWidgetToStackView(patientView);

@@ -342,7 +342,7 @@ void IDatabase::revertVisitEdit()
 QString IDatabase::userLogin(QString userName, QString passWord)
 {
     QSqlQuery query;
-    query.prepare("select username, password from user where username = :USER");
+    query.prepare("SELECT username, password, role FROM user WHERE username = :USER");
     query.bindValue(":USER", userName);
     query.exec();
 
@@ -350,7 +350,17 @@ QString IDatabase::userLogin(QString userName, QString passWord)
         QString password = query.value("password").toString();
 
         if (password == passWord) {
-            qDebug() << "login ok";
+            // 保存当前用户信息
+            currentUserName = query.value("username").toString();
+            QString roleStr = query.value("role").toString();
+
+            // 转换角色字符串为枚举
+            if (roleStr == "Admin") currentUserRole = ROLE_ADMIN;
+            else if (roleStr == "Doctor") currentUserRole = ROLE_DOCTOR;
+            else if (roleStr == "Patient") currentUserRole = ROLE_PATIENT;
+            else currentUserRole = ROLE_PATIENT; // 默认
+
+            qDebug() << "Login ok, user role:" << roleStr;
             return "loginOk";
         } else {
             qDebug() << "wrong password";
@@ -360,6 +370,83 @@ QString IDatabase::userLogin(QString userName, QString passWord)
         qDebug() << "no such user";
         return "wrongUsername";
     }
+}
+
+bool IDatabase::userRegister(QString username, QString password, UserRole role, QString departmentId)
+{
+    qDebug() << "=== 开始注册用户 ===";
+    qDebug() << "用户名:" << username;
+    qDebug() << "密码长度:" << password.length();
+    qDebug() << "角色枚举值:" << role;
+
+    // 检查用户名是否已存在
+    QSqlQuery checkQuery;
+    checkQuery.prepare("SELECT COUNT(*) FROM user WHERE username = :USERNAME");
+    checkQuery.bindValue(":USERNAME", username);
+
+    qDebug() << "执行检查用户名的SQL:" << checkQuery.lastQuery();
+
+    if (!checkQuery.exec()) {
+        qDebug() << "检查用户名失败:" << checkQuery.lastError().text();
+        qDebug() << "详细错误:" << checkQuery.lastError().databaseText();
+        return false;
+    }
+
+    int userCount = 0;
+    if (checkQuery.next()) {
+        userCount = checkQuery.value(0).toInt();
+        qDebug() << "数据库中同名用户数量:" << userCount;
+    }
+
+    if (userCount > 0) {
+        qDebug() << "用户名已存在:" << username;
+        return false;
+    }
+
+    // 将枚举角色转换为字符串
+    QString roleStr;
+    switch (role) {
+    case ROLE_ADMIN:
+        roleStr = "Admin";
+        break;
+    case ROLE_DOCTOR:
+        roleStr = "Doctor";
+        break;
+    case ROLE_PATIENT:
+        roleStr = "Patient";
+        break;
+    default:
+        roleStr = "Patient";
+        break;
+    }
+
+    qDebug() << "角色字符串:" << roleStr;
+
+    // 插入新用户
+    QSqlQuery insertQuery;
+    // QString userId = QUuid::createUuid().toString(QUuid::WithoutBraces);
+
+    // qDebug() << "生成的用户ID:" << userId;
+
+    insertQuery.prepare("INSERT INTO user (USERNAME, PASSWORD, ROLE) "
+                        "VALUES (:USERNAME, :PASSWORD, :ROLE)");
+    // insertQuery.bindValue(":USER_ID", userId);
+    insertQuery.bindValue(":USERNAME", username);
+    insertQuery.bindValue(":PASSWORD", password);
+    insertQuery.bindValue(":ROLE", roleStr);
+
+    qDebug() << "执行插入用户的SQL:" << insertQuery.lastQuery();
+
+    if (!insertQuery.exec()) {
+        qDebug() << "插入用户失败:" << insertQuery.lastError().text();
+        qDebug() << "详细错误:" << insertQuery.lastError().databaseText();
+        return false;
+    }
+
+    qDebug() << "注册成功，用户名" << username << "角色:" << roleStr;
+    qDebug() << "=== 注册完成 ===";
+
+    return true;
 }
 
 QString IDatabase::generateNextEmployeeNo()
@@ -387,6 +474,8 @@ QString IDatabase::generateNextEmployeeNo()
 
 IDatabase::IDatabase(QObject *parent)
     : QObject{parent}
+    , currentUserRole(ROLE_PATIENT)  // 初始化默认角色
+    , currentUserName("")
 {
     initDatabase();
 }
