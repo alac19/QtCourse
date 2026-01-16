@@ -5,6 +5,10 @@
 #include <QSqlTableModel>
 #include <QSortFilterProxyModel>
 
+// 前向声明
+class StockAdjustDialog;
+class StockLogView;
+
 namespace Ui
 {
 class StockView;
@@ -30,11 +34,6 @@ private slots:
     void on_btAdjust_clicked();
 
     void on_btViewLog_clicked();
-
-    void on_cbFilterType_currentIndexChanged(int index);
-
-    // 表格双击事件（查看药品详情）
-    void on_tableView_doubleClicked(const QModelIndex &index);
 
 private:
     Ui::StockView *ui;

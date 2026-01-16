@@ -2,6 +2,7 @@
 #include "ui_stockview.h"
 #include "stockoperationdialog.h"
 #include "stockadjustdialog.h"
+#include "stocklogview.h"
 // #include "medicinedetailview.h"
 #include <QMessageBox>
 #include <QSqlQuery>
@@ -26,10 +27,6 @@ StockView::StockView(QWidget *parent) :
 
     // 更新摘要信息
     updateSummary();
-
-    // 连接信号槽
-    connect(ui->tableView, &QTableView::doubleClicked,
-            this, &StockView::on_tableView_doubleClicked);
 }
 
 StockView::~StockView()
@@ -190,20 +187,13 @@ void StockView::on_btAdjust_clicked()
 void StockView::on_btViewLog_clicked()
 {
     // 打开库存流水查看界面
-    // 这里可以创建一个新的对话框或界面来显示库存操作历史
-    QMessageBox::information(this, "功能提示", "库存流水查看功能正在开发中...");
+    StockLogView *logView = new StockLogView();
+    logView->setAttribute(Qt::WA_DeleteOnClose);
+    logView->setWindowTitle("库存流水记录");
+    logView->resize(800, 600);
+    logView->show();
 }
 
-void StockView::on_cbFilterType_currentIndexChanged(int index)
-{
-
-}
-
-
-void StockView::on_tableView_doubleClicked(const QModelIndex &index)
-{
-
-}
 
 void StockView::setupTableView()
 {

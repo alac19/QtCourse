@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MedicineView</class>
- <widget class="QWidget" name="MedicineView">
+ <class>Prescription_Detail_View</class>
+ <widget class="QWidget" name="Prescription_Detail_View">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>397</width>
-    <height>255</height>
+    <width>456</width>
+    <height>314</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>药品管理</string>
+   <string>处方管理</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -69,9 +69,16 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QPushButton" name="btStockAlert">
+          <widget class="QPushButton" name="btView">
            <property name="text">
-            <string>库存警告</string>
+            <string>查看</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btPrint">
+           <property name="text">
+            <string>打印</string>
            </property>
           </widget>
          </item>

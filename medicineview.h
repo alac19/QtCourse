@@ -30,10 +30,6 @@ private slots:
 
     void on_btModify_clicked();
 
-    void on_btImport_clicked();
-
-    void on_btExport_clicked();
-
     void on_btStockAlert_clicked();
 
 

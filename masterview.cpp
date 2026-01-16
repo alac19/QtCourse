@@ -230,6 +230,16 @@ void MasterView::goPrescription_Detail_View()
     prescription_Detail_View = new Prescription_Detail_View(this);
 
     pushWidgetToStackView(prescription_Detail_View);
+
+    connect(prescription_Detail_View, SIGNAL(goPrescriptionDetailView(QString)), this, SLOT(goPrescription_Detail_EditView(QString)));
+}
+
+void MasterView::goPrescription_Detail_EditView(const QString &prescriptionId)
+{
+    Q_UNUSED(prescriptionId); // 标记参数为未使用，避免编译器警告
+    prescription_Detail_EditView = new Prescription_Detail_EditView(this);
+
+    pushWidgetToStackView(prescription_Detail_EditView);
 }
 
 void MasterView::goPreviousView()

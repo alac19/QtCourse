@@ -57,18 +57,6 @@ void MedicineView::on_btModify_clicked()
 }
 
 
-void MedicineView::on_btImport_clicked()
-{
-    QMessageBox::information(this, "导入", "导入功能暂未实现");
-}
-
-
-void MedicineView::on_btExport_clicked()
-{
-    QMessageBox::information(this, "导出", "导出功能暂未实现");
-}
-
-
 void MedicineView::on_btStockAlert_clicked()
 {
     // // 简单显示库存警告：库存小于最低库存的药品

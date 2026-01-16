@@ -7,7 +7,6 @@
 #include "mainmenuview.h"
 #include "managementview.h"
 #include "appointmentview.h"
-// #include "welcomeview.h"
 #include "visitview.h"
 #include "visiteditview.h"
 #include "departmentview.h"
@@ -21,6 +20,7 @@
 #include "medicineeditview.h"
 #include "stockview.h"
 #include "prescription_detail_view.h"
+#include "prescription_detail_editview.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -57,6 +57,7 @@ public slots:
     void goMedicineEditView(int rowNo);
     void goStockView();
     void goPrescription_Detail_View();
+    void goPrescription_Detail_EditView(const QString &prescriptionId);
     void goPreviousView();
 
 private slots:
@@ -90,5 +91,6 @@ private:
     MedicineEditView *medicineEditView;
     StockView *stockView;
     Prescription_Detail_View *prescription_Detail_View;
+    Prescription_Detail_EditView *prescription_Detail_EditView;
 };
 #endif // MASTERVIEW_H
