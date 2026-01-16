@@ -205,6 +205,17 @@ void MasterView::goMedicineView()
     medicineView = new MedicineView(this);
 
     pushWidgetToStackView(medicineView);
+
+    connect(medicineView, SIGNAL(goMedicineEditView(int)), this, SLOT(goMedicineEditView(int)));
+}
+
+void MasterView::goMedicineEditView(int rowNo)
+{
+    medicineEditView = new MedicineEditView(this, rowNo);
+
+    pushWidgetToStackView(medicineEditView);
+
+    connect(medicineEditView, SIGNAL(goPreviousView()), this, SLOT(goPreviousView()));
 }
 
 void MasterView::goStockView()

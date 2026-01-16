@@ -18,6 +18,7 @@
 #include "patienteditview.h"
 #include "prescriptionview.h"
 #include "medicineview.h"
+#include "medicineeditview.h"
 #include "stockview.h"
 #include "prescription_detail_view.h"
 
@@ -53,6 +54,7 @@ public slots:
     void goPatientEditView(int rowNo);
     void goPrescriptionView();
     void goMedicineView();
+    void goMedicineEditView(int rowNo);
     void goStockView();
     void goPrescription_Detail_View();
     void goPreviousView();
@@ -85,6 +87,7 @@ private:
     PatientEditView *patientEditView;
     PrescriptionView *prescriptionView;
     MedicineView *medicineView;
+    MedicineEditView *medicineEditView;
     StockView *stockView;
     Prescription_Detail_View *prescription_Detail_View;
 };

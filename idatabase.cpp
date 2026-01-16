@@ -355,6 +355,7 @@ bool IDatabase::initMedicineModel()
     medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("PRICE"), Qt::Horizontal, "价格");
     medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("STOCK_QUANTITY"), Qt::Horizontal, "库存");
     medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("MIN_STOCK"), Qt::Horizontal, "最低库存");
+    medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("MANUFACTURER"), Qt::Horizontal, "制造商");
     medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("PRODUCTION_DATE"), Qt::Horizontal, "生产日期");
     medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("EXPIRY_DATE"), Qt::Horizontal, "到期日期");
     medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("IS_PRESCRIPTION"), Qt::Horizontal, "是否处方药");
@@ -381,8 +382,8 @@ int IDatabase::addNewMedicine()
     curRec.setValue("STOCK_QUANTITY", 0);
     curRec.setValue("MIN_STOCK", 10);
     curRec.setValue("IS_PRESCRIPTION", 1);  // 默认 1 为处方药， 0 为非处方药
-    curRec.setValue("CREATEDTIMESTAMP", QDateTime::currentDateTime().toString("yyyy-MM-dd"));
-    curRec.setValue("UPDATEDTIMESTAMP", QDateTime::currentDateTime().toString("yyyy-MM-dd"));
+    // curRec.setValue("CREATEDTIMESTAMP", QDateTime::currentDateTime());
+    // curRec.setValue("UPDATEDTIMESTAMP", QDateTime::currentDateTime());
 
     medicineTabModel->setRecord(curIndex.row(), curRec);
     return curIndex.row();
