@@ -87,6 +87,15 @@ public:
     bool submitVisitEdit();                    // 提交就诊记录编辑
     void revertVisitEdit();                    // 撤销就诊记录编辑
 
+    // 增加药品管理模块数据库部分
+    bool initMedicineModel();
+    int  addNewMedicine();
+    bool searchMedicine(const QString& filter);
+    bool deleteCurrentMedicine();
+    bool submitMedicineEdit();
+    void revertMedicineEdit();
+
+
     QSqlTableModel *patientTabModel;            // 数据模型
     QItemSelectionModel *thePatientSelection;   // 选择模型
 
@@ -98,6 +107,9 @@ public:
 
     QSqlTableModel *visitTabModel;            // 就诊记录数据模型
     QItemSelectionModel *theVisitSelection;   // 就诊记录选择模型
+
+    QSqlTableModel* medicineTabModel;      // 药品数据模型
+    QItemSelectionModel* theMedicineSelection; // 药品选择模型
 };
 
 #endif // IDATABASE_H

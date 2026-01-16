@@ -60,7 +60,7 @@ void MasterView::goManagementView()
     connect(managementView, SIGNAL(goDepartmentView()), this, SLOT(goDepartmentView()));
     connect(managementView, SIGNAL(goDoctorView()), this, SLOT(goDoctorView()));
     connect(managementView, SIGNAL(goPatientView()), this, SLOT(goPatientView()));
-    connect(managementView, SIGNAL(goMedicineView()), this, SLOT(goMedicineView()));
+    connect(managementView, SIGNAL(goPrescriptionView()), this, SLOT(goPrescriptionView()));
 }
 
 void MasterView::goAppointmentView()
@@ -183,6 +183,44 @@ void MasterView::goPatientEditView(int rowNo)
     connect(patientEditView, SIGNAL(goPreviousView()), this, SLOT(goPreviousView()));
 }
 
+void MasterView::goPrescriptionView()
+{
+    if (!PermissionManager::instance().checkPermission("medicine")) {
+        QMessageBox::warning(this, "权限不足",
+                             PermissionManager::instance().getPermissionDeniedMessage());
+        return;
+    }
+
+    prescriptionView = new PrescriptionView(this);
+
+    pushWidgetToStackView(prescriptionView);
+
+    connect(prescriptionView, SIGNAL(goMedicineView()), this, SLOT(goMedicineView()));
+    connect(prescriptionView, SIGNAL(goStockView()), this, SLOT(goStockView()));
+    connect(prescriptionView, SIGNAL(goPrescription_Detail_View()), this, SLOT(goPrescription_Detail_View()));
+}
+
+void MasterView::goMedicineView()
+{
+    medicineView = new MedicineView(this);
+
+    pushWidgetToStackView(medicineView);
+}
+
+void MasterView::goStockView()
+{
+    stockView = new StockView(this);
+
+    pushWidgetToStackView(stockView);
+}
+
+void MasterView::goPrescription_Detail_View()
+{
+    prescription_Detail_View = new Prescription_Detail_View(this);
+
+    pushWidgetToStackView(prescription_Detail_View);
+}
+
 void MasterView::goPreviousView()
 {
     int count = ui->stackedWidget->count();
@@ -201,6 +239,7 @@ void MasterView::goPreviousView()
         this->close(); // 关闭当前窗口（即整个程序）
     }
 }
+
 
 void MasterView::pushWidgetToStackView(QWidget *widget)
 {

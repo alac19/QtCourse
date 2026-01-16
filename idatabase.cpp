@@ -339,6 +339,90 @@ void IDatabase::revertVisitEdit()
     visitTabModel->revertAll();
 }
 
+bool IDatabase::initMedicineModel()
+{
+    medicineTabModel = new QSqlTableModel(this, dataBase);
+    medicineTabModel->setTable("Medicine");
+    medicineTabModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    medicineTabModel->setSort(medicineTabModel->fieldIndex("NAME"), Qt::AscendingOrder);
+
+    // 设置中文表头
+    medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("MEDICINE_ID"), Qt::Horizontal, "ID");
+    medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("NAME"), Qt::Horizontal, "药品名称");
+    medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("CATEGORY"), Qt::Horizontal, "分类");
+    medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("SPECIFICATION"), Qt::Horizontal, "规格");
+    medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("UNIT"), Qt::Horizontal, "单位");
+    medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("PRICE"), Qt::Horizontal, "价格");
+    medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("STOCK_QUANTITY"), Qt::Horizontal, "库存");
+    medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("MIN_STOCK"), Qt::Horizontal, "最低库存");
+    medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("PRODUCTION_DATE"), Qt::Horizontal, "生产日期");
+    medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("EXPIRY_DATE"), Qt::Horizontal, "到期日期");
+    medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("IS_PRESCRIPTION"), Qt::Horizontal, "是否处方药");
+    medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("CREATEDTIMESTAMP"), Qt::Horizontal, "创建时间");
+    medicineTabModel->setHeaderData(medicineTabModel->fieldIndex("UPDATEDTIMESTAMP"), Qt::Horizontal, "更新时间");
+
+    if (!medicineTabModel->select()) {
+        return false;
+    }
+
+    theMedicineSelection = new QItemSelectionModel(medicineTabModel);
+
+    return true;
+}
+
+int IDatabase::addNewMedicine()
+{
+    medicineTabModel->insertRow(medicineTabModel->rowCount(), QModelIndex());
+    QModelIndex curIndex = medicineTabModel->index(medicineTabModel->rowCount() - 1, 1);
+
+    // 为新药品设置默认值
+    QSqlRecord curRec = medicineTabModel->record(curIndex.row());
+    curRec.setValue("MEDICINE_ID", QUuid::createUuid().toString(QUuid::WithoutBraces));
+    curRec.setValue("STOCK_QUANTITY", 0);
+    curRec.setValue("MIN_STOCK", 10);
+    curRec.setValue("IS_PRESCRIPTION", 1);  // 默认 1 为处方药， 0 为非处方药
+    curRec.setValue("CREATEDTIMESTAMP", QDateTime::currentDateTime().toString("yyyy-MM-dd"));
+    curRec.setValue("UPDATEDTIMESTAMP", QDateTime::currentDateTime().toString("yyyy-MM-dd"));
+
+    medicineTabModel->setRecord(curIndex.row(), curRec);
+    return curIndex.row();
+}
+
+bool IDatabase::searchMedicine(const QString &filter)
+{
+    medicineTabModel->setFilter(filter);
+    return medicineTabModel->select();
+}
+
+bool IDatabase::deleteCurrentMedicine()
+{
+    if (!theMedicineSelection->hasSelection()) {
+        return false;
+    }
+
+    int delRow = theMedicineSelection->currentIndex().row();
+    medicineTabModel->removeRow(delRow);
+    medicineTabModel->submitAll();
+    medicineTabModel->select();
+
+    // 删除后选中新的行（比如第一行）
+    if (medicineTabModel->rowCount() > 0) {
+        theMedicineSelection->setCurrentIndex(medicineTabModel->index(0, 0), QItemSelectionModel::Select);
+    }
+
+    return true;
+}
+
+bool IDatabase::submitMedicineEdit()
+{
+    return medicineTabModel->submitAll();
+}
+
+void IDatabase::revertMedicineEdit()
+{
+    medicineTabModel->revertAll();
+}
+
 QString IDatabase::userLogin(QString userName, QString passWord)
 {
     QSqlQuery query;

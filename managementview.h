@@ -23,13 +23,13 @@ private slots:
 
     void on_btPatient_clicked();
 
-    void on_btMedicine_clicked();
+    void on_btPrescription_clicked();
 
 signals:
     void goDepartmentView();
     void goDoctorView();
     void goPatientView();
-    void goMedicineView();
+    void goPrescriptionView();
 
 private:
     Ui::ManagementView *ui;
